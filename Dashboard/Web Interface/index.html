@@ -3,243 +3,132 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Lab Machines — Student Dashboard</title>
-  <style>
-    :root {
-      color-scheme: light;
-      --ink: #17212b;
-      --muted: #75808c;
-      --line: #e6e9ed;
-      --canvas: #f5f7f9;
-      --white: #fff;
-      --navy: #172b3b;
-      --navy-soft: #213b4e;
-      --teal: #087f78;
-      --teal-pale: #e4f5f2;
-      --green: #21865b;
-      --green-pale: #e8f5ed;
-      --red: #be514e;
-      --red-pale: #faeceb;
-      --amber: #b47a23;
-      --amber-pale: #fbf3e6;
-      --shadow: 0 2px 8px rgba(25, 42, 56, .04), 0 12px 28px rgba(25, 42, 56, .025);
-    }
-    * { box-sizing: border-box; }
-    body { margin: 0; background: var(--canvas); color: var(--ink); font: 14px/1.45 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-    button, input { font: inherit; }
-    .app { min-height: 100vh; }
-    .sidebar { position: fixed; inset: 0 auto 0 0; width: 238px; padding: 25px 16px; background: var(--navy); color: #d5e0e7; display: flex; flex-direction: column; }
-    .brand { display: flex; align-items: center; gap: 11px; padding: 0 9px 33px; color: white; }
-    .brand-mark { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 11px; background: #1c938a; color: #fff; }
-    .brand-mark svg { width: 19px; height: 19px; }
-    .brand-name { font-size: 14px; font-weight: 700; letter-spacing: -.2px; }
-    .brand-sub { margin-top: 1px; color: #9fb0bb; font-size: 11px; }
-    .nav-label { padding: 0 11px 9px; color: #8195a3; font-size: 10px; font-weight: 700; letter-spacing: 1.1px; text-transform: uppercase; }
-    .nav-link { height: 42px; padding: 0 11px; display: flex; align-items: center; gap: 12px; border-radius: 8px; color: #c5d1d9; text-decoration: none; font-size: 13px; }
-    .nav-link svg { width: 17px; height: 17px; opacity: .8; }
-    .nav-link.active { background: var(--navy-soft); color: #fff; font-weight: 600; }
-    .nav-link.active svg { color: #65d1c2; opacity: 1; }
-    .sidebar-bottom { margin-top: auto; }
-    .help-card { padding: 14px; border: 1px solid rgba(255,255,255,.12); border-radius: 10px; background: rgba(255,255,255,.035); }
-    .help-title { margin-bottom: 4px; color: #fff; font-size: 12px; font-weight: 600; }
-    .help-copy { color: #9fb0bb; font-size: 11px; line-height: 1.5; }
-    .help-link { display: inline-flex; margin-top: 10px; color: #70d2c5; font-size: 11px; font-weight: 600; text-decoration: none; }
-    .profile { display: flex; align-items: center; gap: 10px; margin: 18px 3px 0; padding: 14px 6px 0; border-top: 1px solid rgba(255,255,255,.12); }
-    .avatar { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 50%; background: #d9ece8; color: #286860; font-size: 11px; font-weight: 700; }
-    .profile-name { color: #fff; font-size: 12px; font-weight: 600; }
-    .profile-role { color: #92a5b1; font-size: 10px; }
-    main { min-height: 100vh; margin-left: 238px; }
-    .topbar { height: 66px; padding: 0 42px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); background: rgba(255,255,255,.84); }
-    .crumb { color: #8a949e; font-size: 12px; }
-    .crumb b { color: #394652; font-weight: 600; }
-    .top-actions { display: flex; align-items: center; gap: 14px; }
-    .network { display: flex; align-items: center; gap: 7px; color: #697680; font-size: 11px; }
-    .network-dot { width: 7px; height: 7px; border-radius: 50%; background: #39a773; box-shadow: 0 0 0 3px #e4f3e9; }
-    .icon-button { width: 34px; height: 34px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 8px; background: white; color: #5f6b76; cursor: pointer; }
-    .icon-button svg { width: 16px; height: 16px; }
-    .content { width: min(1240px, 100%); margin: 0 auto; padding: 34px 42px 48px; }
-    .page-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; margin-bottom: 25px; }
-    h1 { margin: 0; font-size: 25px; line-height: 1.25; letter-spacing: -.7px; font-weight: 700; }
-    .subtitle { margin: 6px 0 0; color: var(--muted); font-size: 13px; }
-    .updated { display: flex; align-items: center; gap: 7px; color: #7d8791; font-size: 11px; white-space: nowrap; }
-    .updated svg { width: 14px; height: 14px; }
-    .metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 15px; margin-bottom: 24px; }
-    .metric-card { min-height: 113px; padding: 17px 18px; border: 1px solid var(--line); border-radius: 11px; background: var(--white); box-shadow: var(--shadow); }
-    .metric-top { display: flex; align-items: center; justify-content: space-between; }
-    .metric-label { color: #74808b; font-size: 11px; font-weight: 500; }
-    .metric-icon { width: 29px; height: 29px; display: grid; place-items: center; border-radius: 8px; background: #eef3f6; color: #597082; }
-    .metric-icon svg { width: 15px; height: 15px; }
-    .metric-value { margin-top: 8px; font-size: 25px; font-weight: 700; letter-spacing: -.6px; line-height: 1; }
-    .metric-foot { margin-top: 7px; color: #8b949d; font-size: 10px; }
-    .metric-foot .good { color: var(--green); font-weight: 600; }
-    .metric-foot .bad { color: var(--red); font-weight: 600; }
-    .panel { border: 1px solid var(--line); border-radius: 11px; background: var(--white); box-shadow: var(--shadow); }
-    .panel-head { min-height: 70px; padding: 15px 19px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid #edf0f2; }
-    .panel-title { margin: 0; font-size: 14px; font-weight: 650; letter-spacing: -.15px; }
-    .panel-caption { margin-top: 3px; color: #89939c; font-size: 11px; }
-    .panel-tools { display: flex; align-items: center; gap: 9px; }
-    .search-wrap { position: relative; }
-    .search-wrap svg { position: absolute; top: 9px; left: 10px; width: 15px; height: 15px; color: #929ca5; }
-    .search { width: 190px; height: 34px; padding: 0 10px 0 32px; outline: none; border: 1px solid #e5e9ed; border-radius: 7px; color: var(--ink); background: white; font-size: 11px; }
-    .search:focus { border-color: #83bcb5; box-shadow: 0 0 0 3px #e9f5f3; }
-    .filter-button { height: 34px; padding: 0 11px; display: flex; align-items: center; gap: 7px; border: 1px solid #e5e9ed; border-radius: 7px; background: white; color: #57636d; font-size: 11px; cursor: pointer; }
-    .filter-button svg { width: 14px; height: 14px; }
-    .table-scroll { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
-    thead { background: #fafbfc; }
-    th { height: 39px; padding: 0 19px; color: #8a949e; font-size: 10px; font-weight: 600; letter-spacing: .25px; }
-    td { height: 66px; padding: 0 19px; border-top: 1px solid #eff1f3; color: #58646f; font-size: 11px; }
-    tr:hover td { background: #fcfdfd; }
-    .machine-cell { display: flex; align-items: center; gap: 11px; }
-    .machine-icon { width: 33px; height: 33px; display: grid; place-items: center; border: 1px solid #e8ecef; border-radius: 9px; color: #607886; background: #f6f9fa; }
-    .machine-icon svg { width: 17px; height: 17px; }
-    .machine-name { color: #26333e; font-size: 12px; font-weight: 650; }
-    .machine-host { margin-top: 2px; color: #909aa3; font-size: 10px; }
-    .status { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 20px; font-size: 10px; font-weight: 600; }
-    .status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-    .status.online { color: var(--green); background: var(--green-pale); }
-    .status.offline { color: var(--red); background: var(--red-pale); }
-    .status.stale { color: var(--amber); background: var(--amber-pale); }
-    .resource { min-width: 120px; }
-    .resource-line { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 6px; color: #52606b; font-size: 10px; }
-    .resource-line strong { color: #35434e; font-size: 10px; font-weight: 600; }
-    .bar { height: 5px; overflow: hidden; border-radius: 5px; background: #edf0f2; }
-    .bar-fill { height: 100%; border-radius: inherit; background: #56a99b; }
-    .bar-fill.warn { background: #d0a14d; }
-    .sessions { color: #54616b; }
-    .sessions strong { color: #27343e; font-weight: 650; }
-    .last-check { color: #87919b; }
-    .row-action { width: 28px; height: 28px; display: grid; place-items: center; border: 0; border-radius: 6px; background: transparent; color: #76818b; cursor: pointer; }
-    .row-action:hover { background: #f1f5f6; }
-    .row-action svg { width: 16px; height: 16px; }
-    .panel-foot { height: 49px; padding: 0 19px; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #edf0f2; color: #8b959e; font-size: 10px; }
-    .pager { display: flex; align-items: center; gap: 5px; }
-    .page-button { min-width: 27px; height: 27px; padding: 0 7px; border: 1px solid transparent; border-radius: 6px; color: #78838d; background: transparent; font-size: 10px; cursor: pointer; }
-    .page-button.current { border-color: #e5e9ec; color: #2c3c47; background: #fff; font-weight: 600; }
-    .empty { display: none; padding: 38px; text-align: center; color: #84909a; font-size: 12px; }
-    .footer-note { margin-top: 15px; color: #9aa3ab; font-size: 10px; text-align: right; }
-    @media (max-width: 1050px) { .sidebar { width: 205px; } main { margin-left: 205px; } .content { padding-right: 26px; padding-left: 26px; } .topbar { padding-right: 26px; padding-left: 26px; } .metrics { grid-template-columns: repeat(2, minmax(0,1fr)); } }
-    @media (max-width: 720px) { .sidebar { position: static; width: auto; height: auto; padding: 13px 16px; flex-direction: row; align-items: center; justify-content: space-between; } .brand { padding: 0; } .sidebar nav, .nav-label, .sidebar-bottom { display: none; } main { margin-left: 0; } .topbar { height: 52px; padding: 0 18px; } .content { padding: 26px 17px 34px; } .page-heading { align-items: flex-start; flex-direction: column; } .metrics { gap: 10px; } .metric-card { min-height: 100px; padding: 13px; } .panel-head { align-items: flex-start; flex-direction: column; } .panel-tools { width: 100%; } .search-wrap { flex: 1; } .search { width: 100%; } .network { display: none; } }
-    @media (max-width: 390px) { .metrics { grid-template-columns: 1fr 1fr; } .metric-value { font-size: 22px; } .updated { white-space: normal; } }
-  </style>
+  <meta name="theme-color" content="#172b3b" />
+  <title>Lab Machines | Student Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="app">
     <aside class="sidebar">
-      <div class="brand">
-        <div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="6" rx="1.5"/><rect x="4" y="14" width="16" height="6" rx="1.5"/><path d="M8 7h.01M8 17h.01M12 7h5M12 17h5" stroke-linecap="round"/></svg></div>
-        <div><div class="brand-name">Lab Machines</div><div class="brand-sub">Student workspace</div></div>
-      </div>
+      <a class="brand" href="#dashboard" id="brand-home" aria-label="Lab Machines dashboard">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="6" rx="1.5"/><rect x="4" y="14" width="16" height="6" rx="1.5"/><path d="M8 7h.01M8 17h.01M12 7h5M12 17h5" stroke-linecap="round"/></svg>
+        </span>
+        <span><span class="brand-name">Lab Machines</span><span class="brand-sub">Student workspace</span></span>
+      </a>
+
       <div class="nav-label">Workspace</div>
       <nav aria-label="Main navigation">
-        <a class="nav-link active" href="#machines"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3.5" y="4" width="7" height="7" rx="1.5"/><rect x="13.5" y="4" width="7" height="7" rx="1.5"/><rect x="3.5" y="14" width="7" height="7" rx="1.5"/><rect x="13.5" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</a>
-        <a class="nav-link" href="#machines" aria-label="Machines"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="3.5" width="16" height="7" rx="1.5"/><rect x="4" y="13.5" width="16" height="7" rx="1.5"/><path d="M8 7h.01M8 17h.01M12 7h5M12 17h5" stroke-linecap="round"/></svg>Machines</a>
-        <a class="nav-link" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 19V5M4 19h16M8 15l3-4 3 2 5-7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="19" cy="6" r="1"/></svg>Usage history</a>
+        <button class="nav-link active" id="home-nav" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3.5" y="4" width="7" height="7" rx="1.5"/><rect x="13.5" y="4" width="7" height="7" rx="1.5"/><rect x="3.5" y="14" width="7" height="7" rx="1.5"/><rect x="13.5" y="14" width="7" height="7" rx="1.5"/></svg>
+          Dashboard
+        </button>
+        <button class="nav-link lab-nav" type="button" data-section="map" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="7" height="6" rx="1"/><rect x="14" y="4" width="7" height="6" rx="1"/><rect x="3" y="14" width="7" height="6" rx="1"/><rect x="14" y="14" width="7" height="6" rx="1"/></svg>
+          Seat map
+        </button>
+        <button class="nav-link lab-nav" type="button" data-section="machines" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="3.5" width="16" height="7" rx="1.5"/><rect x="4" y="13.5" width="16" height="7" rx="1.5"/><path d="M8 7h.01M8 17h.01M12 7h5M12 17h5" stroke-linecap="round"/></svg>
+          Machines
+        </button>
       </nav>
+
       <div class="sidebar-bottom">
-        <div class="help-card"><div class="help-title">Need a hand?</div><div class="help-copy">Having trouble connecting to a lab machine?</div><a class="help-link" href="mailto:lab-support@example.edu">Contact lab support&nbsp; →</a></div>
-        <div class="profile"><div class="avatar">ST</div><div><div class="profile-name">Student account</div><div class="profile-role">Lab access</div></div></div>
+        <div class="help-card">
+          <div class="help-title">Need a hand?</div>
+          <div class="help-copy">Having trouble accessing a lab machine?</div>
+          <a class="help-link" href="mailto:lab-support@example.edu">Contact lab support <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="profile">
+          <span class="avatar" aria-hidden="true">ST</span>
+          <span><span class="profile-name">Student account</span><span class="profile-role">Lab access</span></span>
+        </div>
       </div>
     </aside>
+
     <main>
       <header class="topbar">
-        <div class="crumb">Workspace&nbsp; / &nbsp;<b>Dashboard</b></div>
-        <div class="top-actions"><div class="network"><span class="network-dot"></span>Institute network</div><button class="icon-button" title="Notifications" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+        <div class="crumb" id="breadcrumb"><span>Workspace</span><span class="crumb-separator">/</span><b>Dashboard</b></div>
+        <div class="top-actions">
+          <div class="network"><span class="network-dot" aria-hidden="true"></span>Institute network</div>
+          <button class="icon-button" type="button" title="Notifications" aria-label="Notifications">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
       </header>
-      <section class="content">
+
+      <section class="content dashboard-home" id="dashboard-home" aria-labelledby="dashboard-title">
         <div class="page-heading">
-          <div><h1>Machine overview</h1><p class="subtitle">Check machine availability and current resource usage.</p></div>
-          <div class="updated"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3 2" stroke-linecap="round" stroke-linejoin="round"/></svg>Last updated <span id="updated-at">just now</span></div>
-        </div>
-        <div class="metrics" aria-label="Machine summary">
-          <article class="metric-card"><div class="metric-top"><span class="metric-label">Total machines</span><span class="metric-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="3.5" width="16" height="7" rx="1.5"/><rect x="4" y="13.5" width="16" height="7" rx="1.5"/><path d="M8 7h.01M8 17h.01M12 7h5M12 17h5" stroke-linecap="round"/></svg></span></div><div class="metric-value" id="total-count">8</div><div class="metric-foot">In the lab pool</div></article>
-          <article class="metric-card"><div class="metric-top"><span class="metric-label">Reachable</span><span class="metric-icon" style="background:var(--green-pale);color:var(--green)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m5 12 4 4L19 6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div><div class="metric-value" id="online-count">6</div><div class="metric-foot"><span class="good">Available for connection</span></div></article>
-          <article class="metric-card"><div class="metric-top"><span class="metric-label">Unreachable</span><span class="metric-icon" style="background:var(--red-pale);color:var(--red)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m7 7 10 10M17 7 7 17" stroke-linecap="round"/></svg></span></div><div class="metric-value" id="offline-count">1</div><div class="metric-foot"><span class="bad">Connection check failed</span></div></article>
-          <article class="metric-card"><div class="metric-top"><span class="metric-label">Active sessions</span><span class="metric-icon" style="background:var(--teal-pale);color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="9" cy="8" r="3"/><path d="M3.5 19c.5-3 2.4-4.5 5.5-4.5s5 1.5 5.5 4.5M16 11a3 3 0 1 0 0-6M17 14.5c2.1.4 3.3 1.9 3.5 4.5" stroke-linecap="round"/></svg></span></div><div class="metric-value" id="session-count">14</div><div class="metric-foot">Across reachable machines</div></article>
+          <div>
+            <p class="eyebrow">STUDENT WORKSPACE</p>
+            <h1 id="dashboard-title">Choose your software lab</h1>
+            <p class="subtitle">Select a lab to view its computer layout and machine status.</p>
+          </div>
         </div>
 
-        <section class="panel" aria-labelledby="selection-tip-title">
-          <div class="panel-head">
-            <div>
-              <h2 class="panel-title" id="selection-tip-title">Choosing a machine</h2>
-              <div class="panel-caption">Compare available memory and CPU load before connecting.</div>
-            </div>
+        <div class="lab-card-grid" aria-label="Available software labs">
+          <button class="lab-card" type="button" data-open-lab="lab-1">
+            <span class="lab-card-top"><span class="lab-number">01</span><span class="lab-card-arrow" aria-hidden="true">↗</span></span>
+            <span class="lab-card-title">Software Lab 1</span>
+            <span class="lab-card-description">View the room layout and check machine availability.</span>
+            <span class="lab-card-action">Open lab <span aria-hidden="true">→</span></span>
+          </button>
+          <button class="lab-card" type="button" data-open-lab="lab-2">
+            <span class="lab-card-top"><span class="lab-number">02</span><span class="lab-card-arrow" aria-hidden="true">↗</span></span>
+            <span class="lab-card-title">Software Lab 2</span>
+            <span class="lab-card-description">View the room layout and check machine availability.</span>
+            <span class="lab-card-action">Open lab <span aria-hidden="true">→</span></span>
+          </button>
+          <button class="lab-card" type="button" data-open-lab="lab-3">
+            <span class="lab-card-top"><span class="lab-number">03</span><span class="lab-card-arrow" aria-hidden="true">↗</span></span>
+            <span class="lab-card-title">Software Lab 3</span>
+            <span class="lab-card-description">View the room layout and check machine availability.</span>
+            <span class="lab-card-action">Open lab <span aria-hidden="true">→</span></span>
+          </button>
+        </div>
+      </section>
+
+      <section class="content lab-workspace" id="lab-workspace" aria-labelledby="lab-title" hidden>
+        <div class="page-heading lab-page-heading">
+          <div>
+            <p class="eyebrow" id="lab-eyebrow">SOFTWARE LAB</p>
+            <h1 id="lab-title">Software Lab 1</h1>
+            <p class="subtitle">Room layout and machine information for this lab.</p>
           </div>
-          <div class="panel-foot"><span>Check the last-updated time; resource usage can change.</span></div>
+          <button class="back-button" id="back-to-labs" type="button"><span aria-hidden="true">←</span> All labs</button>
+        </div>
+
+        <div class="lab-tabs" role="tablist" aria-label="Lab sections">
+          <button class="lab-tab active" type="button" role="tab" aria-selected="true" data-section="map">Seat map</button>
+          <button class="lab-tab" type="button" role="tab" aria-selected="false" data-section="machines">Machines</button>
+        </div>
+
+        <section class="lab-section" data-lab-section="map" role="tabpanel" aria-labelledby="map-tab-title">
+          <div class="section-heading">
+            <div><h2 id="map-tab-title">Room layout</h2><p>Choose a computer by checking its availability.</p></div>
+            <span class="section-meta" id="map-lab-label">Software Lab 1</span>
+          </div>
+          <div class="placeholder-card">
+            <span class="placeholder-icon" aria-hidden="true">▦</span>
+            <h3>The lab seat map will appear here</h3>
+            <p>Each computer will be shown in its position in the room.</p>
+          </div>
         </section>
 
-        <section class="panel" id="machines" aria-labelledby="machine-list-title">
-          <div class="panel-head">
-            <div><h2 class="panel-title" id="machine-list-title">Lab machines</h2><div class="panel-caption">Live status and latest resource snapshot</div></div>
-            <div class="panel-tools">
-              <label class="search-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4 4" stroke-linecap="round"/></svg><input class="search" id="machine-search" type="search" placeholder="Search machines" aria-label="Search machines" /></label>
-              <button class="filter-button" id="filter-button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 6h16M7 12h10m-7 6h4" stroke-linecap="round"/></svg><span id="filter-label">All status</span><svg viewBox="0 0 24 24" style="width:12px" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m7 10 5 5 5-5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-            </div>
+        <section class="lab-section" data-lab-section="machines" role="tabpanel" aria-labelledby="machines-tab-title" hidden>
+          <div class="section-heading">
+            <div><p class="eyebrow">MACHINE DETAILS</p><h2 id="machines-tab-title">Machine overview</h2><p>Current availability and resource information for this lab.</p></div>
+            <span class="section-meta" id="machines-lab-label">Software Lab 1</span>
           </div>
-          <div class="table-scroll">
-            <table>
-              <thead><tr><th>Machine</th><th>Status</th><th>CPU load</th><th>Memory available</th><th>Sessions</th><th>Last checked</th><th></th></tr></thead>
-              <tbody id="machine-rows">
-                <tr data-status="online" data-name="lab-node-01">
-                  <td><div class="machine-cell"><span class="machine-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="3.5" width="16" height="7" rx="1.5"/><rect x="4" y="13.5" width="16" height="7" rx="1.5"/><path d="M8 7h.01M8 17h.01M12 7h5M12 17h5" stroke-linecap="round"/></svg></span><span><div class="machine-name">lab-node-01</div><div class="machine-host">lab-node-01.institute.edu</div></span></div></td>
-                  <td><span class="status online"><i class="status-dot"></i>Reachable</span></td><td><div class="resource"><div class="resource-line"><span>Load</span><strong>0.42 / 8</strong></div><div class="bar"><div class="bar-fill" style="width:14%"></div></div></div></td><td><div class="resource"><div class="resource-line"><span>Available</span><strong>11.8 / 16 GB</strong></div><div class="bar"><div class="bar-fill" style="width:74%"></div></div></div></td><td class="sessions"><strong>2</strong> users</td><td class="last-check">12 sec ago</td><td><button class="row-action" aria-label="View lab-node-01"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m9 18 6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></td>
-                </tr>
-                <tr data-status="online" data-name="lab-node-02">
-                  <td><div class="machine-cell"><span class="machine-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="3.5" width="16" height="7" rx="1.5"/><rect x="4" y="13.5" width="16" height="7" rx="1.5"/><path d="M8 7h.01M8 17h.01M12 7h5M12 17h5" stroke-linecap="round"/></svg></span><span><div class="machine-name">lab-node-02</div><div class="machine-host">lab-node-02.institute.edu</div></span></div></td>
-                  <td><span class="status online"><i class="status-dot"></i>Reachable</span></td><td><div class="resource"><div class="resource-line"><span>Load</span><strong>1.26 / 8</strong></div><div class="bar"><div class="bar-fill" style="width:31%"></div></div></div></td><td><div class="resource"><div class="resource-line"><span>Available</span><strong>6.2 / 16 GB</strong></div><div class="bar"><div class="bar-fill warn" style="width:39%"></div></div></div></td><td class="sessions"><strong>4</strong> users</td><td class="last-check">12 sec ago</td><td><button class="row-action" aria-label="View lab-node-02"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m9 18 6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></td>
-                </tr>
-                <tr data-status="online" data-name="lab-node-03">
-                  <td><div class="machine-cell"><span class="machine-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="3.5" width="16" height="7" rx="1.5"/><rect x="4" y="13.5" width="16" height="7" rx="1.5"/><path d="M8 7h.01M8 17h.01M12 7h5M12 17h5" stroke-linecap="round"/></svg></span><span><div class="machine-name">lab-node-03</div><div class="machine-host">lab-node-03.institute.edu</div></span></div></td>
-                  <td><span class="status online"><i class="status-dot"></i>Reachable</span></td><td><div class="resource"><div class="resource-line"><span>Load</span><strong>0.18 / 8</strong></div><div class="bar"><div class="bar-fill" style="width:8%"></div></div></div></td><td><div class="resource"><div class="resource-line"><span>Available</span><strong>22.4 / 32 GB</strong></div><div class="bar"><div class="bar-fill" style="width:70%"></div></div></div></td><td class="sessions"><strong>1</strong> user</td><td class="last-check">18 sec ago</td><td><button class="row-action" aria-label="View lab-node-03"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m9 18 6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></td>
-                </tr>
-                <tr data-status="stale" data-name="lab-node-04">
-                  <td><div class="machine-cell"><span class="machine-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="3.5" width="16" height="7" rx="1.5"/><rect x="4" y="13.5" width="16" height="7" rx="1.5"/><path d="M8 7h.01M8 17h.01M12 7h5M12 17h5" stroke-linecap="round"/></svg></span><span><div class="machine-name">lab-node-04</div><div class="machine-host">lab-node-04.institute.edu</div></span></div></td>
-                  <td><span class="status stale"><i class="status-dot"></i>Metrics stale</span></td><td><div class="resource"><div class="resource-line"><span>Load</span><strong>—</strong></div><div class="bar"><div class="bar-fill" style="width:0%"></div></div></div></td><td><div class="resource"><div class="resource-line"><span>Available</span><strong>—</strong></div><div class="bar"><div class="bar-fill" style="width:0%"></div></div></div></td><td class="sessions">—</td><td class="last-check">8 min ago</td><td><button class="row-action" aria-label="View lab-node-04"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m9 18 6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></td>
-                </tr>
-                <tr data-status="offline" data-name="lab-node-05">
-                  <td><div class="machine-cell"><span class="machine-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="3.5" width="16" height="7" rx="1.5"/><rect x="4" y="13.5" width="16" height="7" rx="1.5"/><path d="M8 7h.01M8 17h.01M12 7h5M12 17h5" stroke-linecap="round"/></svg></span><span><div class="machine-name">lab-node-05</div><div class="machine-host">lab-node-05.institute.edu</div></span></div></td>
-                  <td><span class="status offline"><i class="status-dot"></i>Unreachable</span></td><td><div class="resource"><div class="resource-line"><span>Load</span><strong>—</strong></div><div class="bar"><div class="bar-fill" style="width:0%"></div></div></div></td><td><div class="resource"><div class="resource-line"><span>Available</span><strong>—</strong></div><div class="bar"><div class="bar-fill" style="width:0%"></div></div></div></td><td class="sessions">—</td><td class="last-check">2 min ago</td><td><button class="row-action" aria-label="View lab-node-05"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m9 18 6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></td>
-                </tr>
-                <tr data-status="online" data-name="lab-node-06">
-                  <td><div class="machine-cell"><span class="machine-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="3.5" width="16" height="7" rx="1.5"/><rect x="4" y="13.5" width="16" height="7" rx="1.5"/><path d="M8 7h.01M8 17h.01M12 7h5M12 17h5" stroke-linecap="round"/></svg></span><span><div class="machine-name">lab-node-06</div><div class="machine-host">lab-node-06.institute.edu</div></span></div></td>
-                  <td><span class="status online"><i class="status-dot"></i>Reachable</span></td><td><div class="resource"><div class="resource-line"><span>Load</span><strong>2.08 / 16</strong></div><div class="bar"><div class="bar-fill" style="width:38%"></div></div></div></td><td><div class="resource"><div class="resource-line"><span>Available</span><strong>45.1 / 64 GB</strong></div><div class="bar"><div class="bar-fill" style="width:71%"></div></div></div></td><td class="sessions"><strong>3</strong> users</td><td class="last-check">25 sec ago</td><td><button class="row-action" aria-label="View lab-node-06"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m9 18 6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></td>
-                </tr>
-              </tbody>
-            </table>
-            <div class="empty" id="empty-state">No machines match your search.</div>
+          <div class="placeholder-card machine-placeholder">
+            <span class="placeholder-icon" aria-hidden="true">▤</span>
+            <h3>Machine details will appear here</h3>
+            <p>Availability, CPU, memory, active sessions, and last-check time will be shown for this lab.</p>
           </div>
-          <div class="panel-foot"><span>Showing 6 of 8 machines</span><div class="pager"><button class="page-button" aria-label="Previous page">‹</button><button class="page-button current">1</button><button class="page-button">2</button><button class="page-button" aria-label="Next page">›</button></div></div>
         </section>
-        <div class="footer-note">Sample dashboard data · Updated automatically every 30 seconds</div>
       </section>
     </main>
   </div>
-  <script>
-    const search = document.getElementById('machine-search');
-    const rows = [...document.querySelectorAll('#machine-rows tr')];
-    const emptyState = document.getElementById('empty-state');
-    const filterButton = document.getElementById('filter-button');
-    const filterLabel = document.getElementById('filter-label');
-    let statusFilter = 'all';
-
-    function updateRows() {
-      const query = search.value.trim().toLowerCase();
-      let visible = 0;
-      rows.forEach(row => {
-        const matchesText = row.dataset.name.includes(query);
-        const matchesStatus = statusFilter === 'all' || row.dataset.status === statusFilter;
-        row.hidden = !(matchesText && matchesStatus);
-        if (!row.hidden) visible++;
-      });
-      emptyState.style.display = visible ? 'none' : 'block';
-    }
-    search.addEventListener('input', updateRows);
-    filterButton.addEventListener('click', () => {
-      const options = ['all', 'online', 'offline', 'stale'];
-      statusFilter = options[(options.indexOf(statusFilter) + 1) % options.length];
-      filterLabel.textContent = ({all:'All status', online:'Reachable', offline:'Unreachable', stale:'Metrics stale'})[statusFilter];
-      updateRows();
-    });
-  </script>
+  <script src="app.js" defer></script>
 </body>
 </html>
