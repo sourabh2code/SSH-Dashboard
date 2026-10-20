@@ -108,10 +108,32 @@
             <div><h2 id="map-tab-title">Room layout</h2><p>Choose a computer by checking its availability.</p></div>
             <span class="section-meta" id="map-lab-label">Software Lab 1</span>
           </div>
-          <div class="placeholder-card">
-            <span class="placeholder-icon" aria-hidden="true">▦</span>
-            <h3>The lab seat map will appear here</h3>
-            <p>Each computer will be shown in its position in the room.</p>
+          <div class="room-card">
+            <div class="room-card-head">
+              <div><p class="eyebrow">ROOM PLAN</p><h3>Computer layout</h3><p>Each tile represents one computer in the room.</p></div>
+              <div class="seat-legend" aria-label="Computer availability legend">
+                <span><i class="legend-dot available" aria-hidden="true"></i>Available</span>
+                <span><i class="legend-dot unavailable" aria-hidden="true"></i>Unavailable</span>
+              </div>
+            </div>
+            <div class="cinema-room" id="cinema-room">
+              <div class="room-screen" aria-label="Screen at the front of the room">
+                <span class="screen-glow" aria-hidden="true"></span>
+                <span class="screen-label">SCREEN</span>
+                <span class="screen-caption">FRONT OF ROOM</span>
+              </div>
+              <div class="seat-banks">
+                <section class="seat-bank" aria-labelledby="left-bank-title">
+                  <div class="bank-heading"><h4 id="left-bank-title">Left bank</h4><span>70 PCs</span></div>
+                  <div class="pc-grid" id="seat-bank-left" aria-label="Left bank, ten rows and seven columns"></div>
+                </section>
+                <section class="seat-bank" aria-labelledby="right-bank-title">
+                  <div class="bank-heading"><h4 id="right-bank-title">Right bank</h4><span>70 PCs</span></div>
+                  <div class="pc-grid" id="seat-bank-right" aria-label="Right bank, ten rows and seven columns"></div>
+                </section>
+              </div>
+              <p class="seat-map-note"><span class="preview-dot" aria-hidden="true"></span>Preview availability only. Live machine status will be connected in a later stage.</p>
+            </div>
           </div>
         </section>
 

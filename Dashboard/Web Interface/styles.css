@@ -174,3 +174,53 @@
       .home-note { align-items: flex-start; }
       .section-heading { align-items: flex-start; flex-direction: column; }
     }
+
+    /* Cinema-style layout with two independent 10 x 7 PC banks */
+    .room-card { padding: 22px; border: 1px solid #e1e7ea; border-radius: 13px; background: #fff; box-shadow: var(--shadow); }
+    .room-card-head { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+    .room-card-head h3 { margin: 0; color: #293842; font-size: 16px; letter-spacing: -.2px; }
+    .room-card-head p:not(.eyebrow) { margin: 4px 0 0; color: #7a8790; font-size: 11px; }
+    .seat-legend { display: flex; align-items: center; gap: 15px; }
+    .seat-legend span { display: inline-flex; align-items: center; gap: 7px; color: #63717b; font-size: 10px; font-weight: 600; white-space: nowrap; }
+    .legend-dot { width: 9px; height: 9px; display: inline-block; border-radius: 3px; }
+    .legend-dot.available { background: #2c9c68; }
+    .legend-dot.unavailable { background: #d86161; }
+    .cinema-room { margin-top: 25px; padding: 20px 18px 14px; border: 1px solid #e7ecee; border-radius: 12px; background: linear-gradient(180deg, #fbfcfc 0%, #f7f9f9 100%); }
+    .room-screen { position: relative; width: min(450px, 70%); min-height: 49px; margin: 0 auto 32px; display: flex; align-items: center; justify-content: center; gap: 12px; overflow: hidden; border: 1px solid #cddcdd; border-top: 3px solid #16877f; border-radius: 5px 5px 13px 13px; background: linear-gradient(180deg, #fff 0%, #f4f8f8 100%); color: #3c6265; }
+    .screen-glow { position: absolute; top: 0; right: 10%; left: 10%; height: 12px; background: rgba(50,153,144,.12); filter: blur(9px); }
+    .screen-label, .screen-caption { position: relative; z-index: 1; }
+    .screen-label { font-size: 11px; font-weight: 800; letter-spacing: 2px; }
+    .screen-caption { padding-left: 11px; border-left: 1px solid #d6e0e2; color: #8c9ba0; font-size: 8px; font-weight: 700; letter-spacing: 1px; }
+    .seat-banks { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(18px, 4vw, 46px); max-width: 1050px; margin: 0 auto; }
+    .seat-bank { min-width: 0; padding: 15px 14px 17px; border: 1px solid #e6ebed; border-radius: 10px; background: #fff; }
+    .bank-heading { margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+    .bank-heading h4 { margin: 0; color: #495a64; font-size: 10px; font-weight: 750; letter-spacing: 1px; text-transform: uppercase; }
+    .bank-heading span { color: #99a3a9; font-size: 9px; }
+    .pc-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: clamp(4px, .8vw, 9px); }
+    .pc-seat { min-width: 0; min-height: 34px; display: grid; place-items: center; border: 1px solid transparent; border-radius: 6px; font-size: 9px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -.15px; }
+    .pc-seat.is-available { border-color: #cce9d8; background: #e7f5ec; color: #287c50; }
+    .pc-seat.is-unavailable { border-color: #f1d3d2; background: #fbeceb; color: #b84c4b; }
+    .seat-map-note { margin: 16px 0 0; display: flex; align-items: center; justify-content: center; gap: 7px; color: #8b969d; font-size: 10px; text-align: center; }
+    .preview-dot { width: 6px; height: 6px; border-radius: 50%; background: #c49a52; }
+    @media (max-width: 950px) {
+      .seat-banks { gap: 14px; }
+      .seat-bank { padding: 12px 9px 13px; }
+      .pc-grid { gap: 5px; }
+      .pc-seat { min-height: 30px; font-size: 8px; }
+    }
+    @media (max-width: 720px) {
+      .room-card { padding: 15px; }
+      .room-card-head { align-items: flex-start; flex-direction: column; }
+      .seat-legend { gap: 12px; }
+      .cinema-room { margin-top: 18px; padding: 15px 10px 12px; }
+      .room-screen { width: 78%; min-height: 43px; margin-bottom: 20px; }
+      .seat-banks { grid-template-columns: 1fr; gap: 12px; }
+      .seat-bank { padding: 13px; }
+      .pc-grid { gap: 7px; }
+      .pc-seat { min-height: 35px; font-size: 9px; }
+    }
+    @media (max-width: 390px) {
+      .pc-grid { gap: 4px; }
+      .pc-seat { min-height: 31px; font-size: 8px; }
+      .seat-map-note { align-items: flex-start; justify-content: flex-start; text-align: left; }
+    }
