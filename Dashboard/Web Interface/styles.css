@@ -272,3 +272,12 @@
       .machine-pagination { align-items: flex-start; flex-direction: column; padding: 9px 12px; }
       .machine-data-note { align-items: flex-start; line-height: 1.5; }
     }
+
+/* Sidebar-free layout and home-only support card */
+main { margin-left: 0; }
+.home-support { position: fixed; left: 24px; bottom: 24px; width: 240px; padding: 16px; border-color: var(--line); background: #fff; box-shadow: var(--shadow); }
+.home-support .help-title { color: var(--ink); }
+.home-support .help-copy { color: var(--muted); }
+.home-support .help-link { color: var(--teal); }
+.dashboard-home { padding-bottom: 180px; }
+@media (max-width: 720px) { .home-support { position: static; width: 100%; max-width: 300px; margin-top: 24px; } .dashboard-home { padding-bottom: 34px; } }

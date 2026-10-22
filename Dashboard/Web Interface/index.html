@@ -9,48 +9,10 @@
 </head>
 <body>
   <div class="app">
-    <aside class="sidebar">
-      <a class="brand" href="#dashboard" id="brand-home" aria-label="Lab Machines dashboard">
-        <span class="brand-mark" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="6" rx="1.5"/><rect x="4" y="14" width="16" height="6" rx="1.5"/><path d="M8 7h.01M8 17h.01M12 7h5M12 17h5" stroke-linecap="round"/></svg>
-        </span>
-        <span><span class="brand-name">Lab Machines</span><span class="brand-sub">Student workspace</span></span>
-      </a>
-
-      <div class="nav-label">Workspace</div>
-      <nav aria-label="Main navigation">
-        <button class="nav-link active" id="home-nav" type="button">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3.5" y="4" width="7" height="7" rx="1.5"/><rect x="13.5" y="4" width="7" height="7" rx="1.5"/><rect x="3.5" y="14" width="7" height="7" rx="1.5"/><rect x="13.5" y="14" width="7" height="7" rx="1.5"/></svg>
-          Dashboard
-        </button>
-        <button class="nav-link lab-nav" type="button" data-section="map" hidden>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="7" height="6" rx="1"/><rect x="14" y="4" width="7" height="6" rx="1"/><rect x="3" y="14" width="7" height="6" rx="1"/><rect x="14" y="14" width="7" height="6" rx="1"/></svg>
-          Seat map
-        </button>
-        <button class="nav-link lab-nav" type="button" data-section="machines" hidden>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="3.5" width="16" height="7" rx="1.5"/><rect x="4" y="13.5" width="16" height="7" rx="1.5"/><path d="M8 7h.01M8 17h.01M12 7h5M12 17h5" stroke-linecap="round"/></svg>
-          Machines
-        </button>
-      </nav>
-
-      <div class="sidebar-bottom">
-        <div class="help-card">
-          <div class="help-title">Need a hand?</div>
-          <div class="help-copy">Having trouble accessing a lab machine?</div>
-          <a class="help-link" href="mailto:lab-support@example.edu">Contact lab support <span aria-hidden="true">→</span></a>
-        </div>
-        <div class="profile">
-          <span class="avatar" aria-hidden="true">ST</span>
-          <span><span class="profile-name">Student account</span><span class="profile-role">Lab access</span></span>
-        </div>
-      </div>
-    </aside>
-
     <main>
       <header class="topbar">
         <div class="crumb" id="breadcrumb"><span>Workspace</span><span class="crumb-separator">/</span><b>Dashboard</b></div>
         <div class="top-actions">
-          <div class="network"><span class="network-dot" aria-hidden="true"></span>Institute network</div>
           <button class="icon-button" type="button" title="Notifications" aria-label="Notifications">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
@@ -85,6 +47,11 @@
             <span class="lab-card-description">View the room layout and check machine availability.</span>
             <span class="lab-card-action">Open lab <span aria-hidden="true">→</span></span>
           </button>
+        </div>
+        <div class="help-card home-support">
+          <div class="help-title">Need a hand?</div>
+          <div class="help-copy">Having trouble accessing a lab machine?</div>
+          <a class="help-link" href="mailto:lab-support@example.edu">Contact lab support <span aria-hidden="true">→</span></a>
         </div>
       </section>
 
