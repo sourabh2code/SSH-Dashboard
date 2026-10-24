@@ -7,7 +7,6 @@ const labs = {
 const dashboardHome = document.getElementById("dashboard-home");
 const labWorkspace = document.getElementById("lab-workspace");
 const breadcrumb = document.getElementById("breadcrumb");
-const homeNav = document.getElementById("home-nav");
 const labTitle = document.getElementById("lab-title");
 const labEyebrow = document.getElementById("lab-eyebrow");
 const mapLabLabel = document.getElementById("map-lab-label");
@@ -40,7 +39,7 @@ function setSection(section) {
     panel.hidden = panel.dataset.labSection !== section;
   });
 
-  document.querySelectorAll(".lab-nav, .lab-tab").forEach((button) => {
+  document.querySelectorAll(".lab-tab").forEach((button) => {
     const selected = button.dataset.section === section;
     button.classList.toggle("active", selected);
     if (button.hasAttribute("role")) button.setAttribute("aria-selected", String(selected));
@@ -71,8 +70,6 @@ function openLab(labId) {
   current.textContent = lab.name;
   breadcrumb.append(workspace, separator, current);
 
-  homeNav.classList.remove("active");
-  document.querySelectorAll(".lab-nav").forEach((button) => { button.hidden = false; });
   setSection("map");
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -273,8 +270,6 @@ function returnToDashboard() {
   activeLabId = null;
   dashboardHome.hidden = false;
   labWorkspace.hidden = true;
-  homeNav.classList.add("active");
-  document.querySelectorAll(".lab-nav").forEach((button) => { button.hidden = true; });
 
   breadcrumb.replaceChildren();
   const workspace = document.createElement("span");
@@ -292,16 +287,11 @@ document.querySelectorAll("[data-open-lab]").forEach((button) => {
   button.addEventListener("click", () => openLab(button.dataset.openLab));
 });
 
-document.querySelectorAll(".lab-nav, .lab-tab").forEach((button) => {
+document.querySelectorAll(".lab-tab").forEach((button) => {
   button.addEventListener("click", () => setSection(button.dataset.section));
 });
 
 document.getElementById("back-to-labs").addEventListener("click", returnToDashboard);
-homeNav.addEventListener("click", returnToDashboard);
-document.getElementById("brand-home").addEventListener("click", (event) => {
-  event.preventDefault();
-  returnToDashboard();
-});
 
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && activeLabId) returnToDashboard();
