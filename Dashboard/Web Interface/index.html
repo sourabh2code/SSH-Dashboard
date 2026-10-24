@@ -24,19 +24,19 @@
           <button class="lab-card" type="button" data-open-lab="lab-1">
             <span class="lab-card-top"><span class="lab-number">01</span><span class="lab-card-arrow" aria-hidden="true">↗</span></span>
             <span class="lab-card-title">Software Lab 1</span>
-            <span class="lab-card-description">View the room layout and check machine availability.</span>
+            <span class="lab-card-description">View the LAB layout and check machine availability.</span>
             <span class="lab-card-action">Open lab <span aria-hidden="true">→</span></span>
           </button>
           <button class="lab-card" type="button" data-open-lab="lab-2">
             <span class="lab-card-top"><span class="lab-number">02</span><span class="lab-card-arrow" aria-hidden="true">↗</span></span>
             <span class="lab-card-title">Software Lab 2</span>
-            <span class="lab-card-description">View the room layout and check machine availability.</span>
+            <span class="lab-card-description">View the LAB layout and check machine availability.</span>
             <span class="lab-card-action">Open lab <span aria-hidden="true">→</span></span>
           </button>
           <button class="lab-card" type="button" data-open-lab="lab-3">
             <span class="lab-card-top"><span class="lab-number">03</span><span class="lab-card-arrow" aria-hidden="true">↗</span></span>
             <span class="lab-card-title">Software Lab 3</span>
-            <span class="lab-card-description">View the room layout and check machine availability.</span>
+            <span class="lab-card-description">View the LAB layout and check machine availability.</span>
             <span class="lab-card-action">Open lab <span aria-hidden="true">→</span></span>
           </button>
         </div>
@@ -50,9 +50,8 @@
       <section class="content lab-workspace" id="lab-workspace" aria-labelledby="lab-title" hidden>
         <div class="page-heading lab-page-heading">
           <div>
-            <p class="eyebrow" id="lab-eyebrow">SOFTWARE LAB</p>
             <h1 id="lab-title">Software Lab 1</h1>
-            <p class="subtitle">Room layout and machine information for this lab.</p>
+            <p class="subtitle">LAB layout and machine information for this lab.</p>
           </div>
           <button class="back-button" id="back-to-labs" type="button"><span aria-hidden="true">←</span> All labs</button>
         </div>
@@ -64,12 +63,11 @@
 
         <section class="lab-section" data-lab-section="map" role="tabpanel" aria-labelledby="map-tab-title">
           <div class="section-heading">
-            <div><h2 id="map-tab-title">Room layout</h2><p>Choose a computer by checking its availability.</p></div>
-            <span class="section-meta" id="map-lab-label">Software Lab 1</span>
+            <div><h2 id="map-tab-title">LAB layout</h2><p>Choose a computer by checking its availability.</p></div>
           </div>
           <div class="room-card">
             <div class="room-card-head">
-              <div><p class="eyebrow">ROOM PLAN</p><h3>Computer layout</h3><p>Each tile represents one computer in the room.</p></div>
+              <div><p class="eyebrow">LAB PLAN</p><h3>Computer layout</h3><p>Each tile represents one computer in the LAB.</p></div>
               <div class="seat-legend" aria-label="Computer availability legend">
                 <span><i class="legend-dot available" aria-hidden="true"></i>Available</span>
                 <span><i class="legend-dot unavailable" aria-hidden="true"></i>Unavailable</span>
@@ -79,29 +77,28 @@
               
               <div class="seat-banks">
                 <section class="seat-bank" aria-labelledby="left-bank-title">
-                  <div class="bank-heading"><h4 id="left-bank-title">Left bank</h4><span>70 PCs</span></div>
+                  <div class="bank-heading"><span>70 PCs</span></div>
                   <div class="pc-grid" id="seat-bank-left" aria-label="Left bank, ten rows and seven columns"></div>
                 </section>
                 <section class="seat-bank" aria-labelledby="right-bank-title">
-                  <div class="bank-heading"><h4 id="right-bank-title">Right bank</h4><span>70 PCs</span></div>
+                  <div class="bank-heading"><span>70 PCs</span></div>
                   <div class="pc-grid" id="seat-bank-right" aria-label="Right bank, ten rows and seven columns"></div>
                 </section>
               </div>
-              <p class="seat-map-note"><span class="preview-dot" aria-hidden="true"></span>Preview availability only. Live machine status will be connected in a later stage.</p>
+              <!-- <p class="seat-map-note"><span class="preview-dot" aria-hidden="true"></span>Preview availability only. Live machine status will be connected in a later stage.</p> -->
             </div>
           </div>
         </section>
 
         <section class="lab-section" data-lab-section="machines" role="tabpanel" aria-labelledby="machines-tab-title" hidden>
           <div class="section-heading">
-            <div><p class="eyebrow">MACHINE DETAILS</p><h2 id="machines-tab-title">Machine overview</h2><p>Current availability and resource information for this lab.</p></div>
-            <span class="section-meta" id="machines-lab-label">Software Lab 1</span>
+            <div><h2 id="machines-tab-title">Machine overview</h2><p>Current availability and resource information for this lab.</p></div>
           </div>
           <div class="machine-summary-grid" aria-label="Machine summary for selected lab">
             <article class="metric-card"><div class="metric-label">Total PCs</div><div class="metric-value" id="machine-total">140</div><div class="metric-foot">In this software lab</div></article>
             <article class="metric-card"><div class="metric-label">Available</div><div class="metric-value good-value" id="machine-available">—</div><div class="metric-foot">Ready for connection</div></article>
             <article class="metric-card"><div class="metric-label">Unavailable</div><div class="metric-value bad-value" id="machine-unavailable">—</div><div class="metric-foot">Not responding</div></article>
-            <article class="metric-card"><div class="metric-label">Active sessions</div><div class="metric-value" id="machine-sessions">—</div><div class="metric-foot">Session count only</div></article>
+            <!-- <article class="metric-card"><div class="metric-label">Active sessions</div><div class="metric-value" id="machine-sessions">—</div><div class="metric-foot">Session count only</div></article> -->
           </div>
 
           <section class="panel machine-list-panel" aria-labelledby="machine-list-title">
@@ -125,7 +122,7 @@
               <div class="pager"><button class="page-button" id="machine-prev" type="button" aria-label="Previous page">‹</button><span class="page-count" id="machine-page-count">Page 1 of 14</span><button class="page-button" id="machine-next" type="button" aria-label="Next page">›</button></div>
             </div>
           </section>
-          <p class="machine-data-note"><span class="preview-dot" aria-hidden="true"></span>Demo values are shown until live SSH monitoring is connected. Logged-in users are represented as a count.</p>
+          <!-- <p class="machine-data-note"><span class="preview-dot" aria-hidden="true"></span>Demo values are shown until live SSH monitoring is connected. Logged-in users are represented as a count.</p> -->
           </div>
         </section>
       </section>
