@@ -226,7 +226,7 @@
     }
 
     /* Per-lab machine overview */
-    .machine-summary-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 13px; margin: 0 0 20px; }
+    .machine-summary-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 13px; margin: 0 0 20px; }
     .machine-summary-grid .metric-card { min-height: 103px; padding: 15px 16px; }
     .machine-summary-grid .metric-value { font-size: 24px; }
     .good-value { color: #21865b; }
@@ -271,6 +271,12 @@
       .filter-label { display: none; }
       .machine-pagination { align-items: flex-start; flex-direction: column; padding: 9px 12px; }
       .machine-data-note { align-items: flex-start; line-height: 1.5; }
+    }
+
+    .pc-machine-icon img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
     }
 
 /* Sidebar-free layout and home-only support card */
