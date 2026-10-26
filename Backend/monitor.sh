@@ -40,11 +40,16 @@ do
     MEM=$(awk -v t="$TOTAL" -v a="$AVAILABLE" \
         'BEGIN {printf "%.2f", 100*(t-a)/t}')
 
-    USERS=$(who | awk '{print $1}' | sort -u | wc -l)
-    LOAD=$(awk '{print $1}' /proc/loadavg)
-    UPTIME=$(awk '{printf "%.0f", $1}' /proc/uptime)
+    
+    RAM_TOTAL_MB=$((TOTAL / 1024))
+    RAM_AVAILABLE_MB=$((AVAILABLE / 1024))
 
-    REPORT="host=$HOST cpu=$CPU mem=$MEM users=$USERS load=$LOAD uptime=$UPTIME"
+
+    
+    SSH_SESSIONS=$(ss -Htn state established '( sport = :22 )' 2>/dev/null | wc -l)
+
+
+    REPORT="host=$HOST cpu=$CPU mem=$MEM ram_total_mb=$RAM_TOTAL_MB ram_available_mb=$RAM_AVAILABLE_MB ssh_sessions=$SSH_SESSIONS"
 
     echo "$REPORT"
 
