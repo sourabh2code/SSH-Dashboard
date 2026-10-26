@@ -142,10 +142,35 @@
             <div><p class="eyebrow">MACHINE DETAILS</p><h2 id="machines-tab-title">Machine overview</h2><p>Current availability and resource information for this lab.</p></div>
             <span class="section-meta" id="machines-lab-label">Software Lab 1</span>
           </div>
-          <div class="placeholder-card machine-placeholder">
-            <span class="placeholder-icon" aria-hidden="true">▤</span>
-            <h3>Machine details will appear here</h3>
-            <p>Availability, CPU, memory, active sessions, and last-check time will be shown for this lab.</p>
+          <div class="machine-summary-grid" aria-label="Machine summary for selected lab">
+            <article class="metric-card"><div class="metric-label">Total PCs</div><div class="metric-value" id="machine-total">140</div><div class="metric-foot">In this software lab</div></article>
+            <article class="metric-card"><div class="metric-label">Available</div><div class="metric-value good-value" id="machine-available">—</div><div class="metric-foot">Ready for connection</div></article>
+            <article class="metric-card"><div class="metric-label">Unavailable</div><div class="metric-value bad-value" id="machine-unavailable">—</div><div class="metric-foot">Not responding</div></article>
+            <article class="metric-card"><div class="metric-label">Active sessions</div><div class="metric-value" id="machine-sessions">—</div><div class="metric-foot">Session count only</div></article>
+          </div>
+
+          <section class="panel machine-list-panel" aria-labelledby="machine-list-title">
+            <div class="panel-head machine-list-head">
+              <div><h3 class="panel-title" id="machine-list-title">Machine list</h3><div class="panel-caption" id="machine-list-caption">Resource snapshot for the selected lab</div></div>
+              <div class="panel-tools machine-list-tools">
+                <label class="search-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4 4" stroke-linecap="round"/></svg><input class="search" id="machine-search" type="search" placeholder="Search PC number" aria-label="Search PCs in this lab" /></label>
+                <label class="filter-label" for="machine-filter">Status</label>
+                <select class="machine-filter" id="machine-filter" aria-label="Filter machines by status"><option value="all">All</option><option value="available">Available</option><option value="unavailable">Unavailable</option></select>
+              </div>
+            </div>
+            <div class="table-scroll">
+              <table>
+                <thead><tr><th>PC / host</th><th>Status</th><th>CPU usage</th><th>Memory available</th><th>Sessions</th><th>Last checked</th></tr></thead>
+                <tbody id="machine-rows"></tbody>
+              </table>
+              <div class="empty machine-empty" id="machine-empty" hidden>No machines match your search.</div>
+            </div>
+            <div class="panel-foot machine-pagination">
+              <span id="machine-page-summary">Showing 1–10 of 140 PCs</span>
+              <div class="pager"><button class="page-button" id="machine-prev" type="button" aria-label="Previous page">‹</button><span class="page-count" id="machine-page-count">Page 1 of 14</span><button class="page-button" id="machine-next" type="button" aria-label="Next page">›</button></div>
+            </div>
+          </section>
+          <p class="machine-data-note"><span class="preview-dot" aria-hidden="true"></span>Demo values are shown until live SSH monitoring is connected. Logged-in users are represented as a count.</p>
           </div>
         </section>
       </section>

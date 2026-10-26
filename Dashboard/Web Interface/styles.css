@@ -224,3 +224,51 @@
       .pc-seat { min-height: 31px; font-size: 8px; }
       .seat-map-note { align-items: flex-start; justify-content: flex-start; text-align: left; }
     }
+
+    /* Per-lab machine overview */
+    .machine-summary-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 13px; margin: 0 0 20px; }
+    .machine-summary-grid .metric-card { min-height: 103px; padding: 15px 16px; }
+    .machine-summary-grid .metric-value { font-size: 24px; }
+    .good-value { color: #21865b; }
+    .bad-value { color: #be514e; }
+    .machine-list-panel { overflow: hidden; }
+    .machine-list-head { min-height: 75px; }
+    .machine-list-tools { align-items: center; }
+    .machine-list-tools .search { width: 185px; }
+    .filter-label { color: #73808a; font-size: 10px; font-weight: 600; }
+    .machine-filter { height: 34px; min-width: 105px; padding: 0 27px 0 9px; border: 1px solid #e5e9ed; border-radius: 7px; background: #fff; color: #52616b; font-size: 11px; }
+    .machine-filter:focus, .search:focus { outline: none; border-color: #83bcb5; box-shadow: 0 0 0 3px #e9f5f3; }
+    .pc-machine-icon { width: 35px; height: 35px; flex: 0 0 35px; border-radius: 9px; color: #54747b; font-size: 9px; font-weight: 750; letter-spacing: -.3px; }
+    .machine-name, .machine-host { display: block; }
+    .machine-list-panel table { min-width: 850px; }
+    .machine-list-panel th:first-child { min-width: 210px; }
+    .machine-list-panel td { height: 61px; }
+    .machine-resource { min-width: 102px; }
+    .machine-resource .resource-line { gap: 10px; }
+    .machine-resource .resource-line span { color: #35434e; font-weight: 650; }
+    .machine-resource .resource-line strong { color: #8a959d; font-size: 9px; font-weight: 500; }
+    .machine-pagination { min-height: 52px; height: auto; gap: 12px; }
+    .machine-pagination .pager { gap: 8px; }
+    .machine-pagination .page-button:disabled { opacity: .35; cursor: default; }
+    .page-count { min-width: 70px; color: #7b8790; font-size: 10px; text-align: center; }
+    .machine-empty:not([hidden]) { display: block; }
+    .machine-data-note { margin: 13px 0 0; display: flex; align-items: center; gap: 7px; color: #87939b; font-size: 10px; }
+    @media (max-width: 1050px) { .machine-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 720px) {
+      .machine-list-head { align-items: stretch; }
+      .machine-list-tools { display: grid; grid-template-columns: 1fr auto auto; gap: 7px; }
+      .machine-list-tools .search-wrap { min-width: 0; }
+      .machine-list-tools .search { width: 100%; }
+      .machine-list-tools .filter-label { align-self: center; }
+      .machine-filter { min-width: 94px; }
+      .machine-pagination { align-items: center; flex-direction: row; padding: 0 12px; }
+    }
+    @media (max-width: 420px) {
+      .machine-summary-grid { gap: 8px; }
+      .machine-summary-grid .metric-card { min-height: 95px; padding: 12px; }
+      .machine-summary-grid .metric-value { font-size: 21px; }
+      .machine-list-tools { grid-template-columns: 1fr auto; }
+      .filter-label { display: none; }
+      .machine-pagination { align-items: flex-start; flex-direction: column; padding: 9px 12px; }
+      .machine-data-note { align-items: flex-start; line-height: 1.5; }
+    }
