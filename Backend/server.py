@@ -1,6 +1,6 @@
 
 from http.server import HTTPServer, BaseHTTPRequestHandler
-from datetime import datetime
+import re
 from pathlib import Path
 import threading
 import time
@@ -13,36 +13,29 @@ CLEANUP_INTERVAL = 3600  # 1 hour
 
 REPORT_DIR.mkdir(parents=True, exist_ok=True)
 
-latest_reports = {}
 lock = threading.Lock()
 
 
-def save_report(data):
-    now = datetime.now()
 
-    # Create a separate log file for each hour
-    filename = now.strftime("report_%Y%m%d_%H.log")
-    filepath = REPORT_DIR / filename
+def rebuild_latest():
+    with open(REPORT_DIR / "latest.txt", "w") as f:
+        for filepath in sorted(REPORT_DIR.glob("machine_*.txt")):
+            f.write(filepath.read_text())
+
+
+def save_report(data):
+    fields = dict(field.split("=", 1) for field in data.split())
+    host = fields["host"]
+
+    # Use safe hostnames as filenames
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,62}", host):
+        raise ValueError("Invalid hostname")
+
+    filepath = REPORT_DIR / f"machine_{host}.txt"
 
     with lock:
-        with open(filepath, "a") as f:
-            f.write(f"[{now:%Y-%m-%d %H:%M:%S}] {data}\n")
-
-        # Extract hostname
-        host = "unknown"
-
-        for field in data.split():
-            if field.startswith("host="):
-                host = field.split("=", 1)[1]
-                break
-
-        # Update latest report for each machine
-        latest_reports[host] = data
-
-        # Save the latest reports
-        with open(REPORT_DIR / "latest.txt", "w") as f:
-            for report in latest_reports.values():
-                f.write(report + "\n")
+        filepath.write_text(data + "\n")
+        rebuild_latest()
 
 
 def cleanup_old_logs():
