@@ -287,3 +287,52 @@ main { margin-left: 0; }
 .home-support .help-link { color: var(--teal); }
 .dashboard-home { padding-bottom: 180px; }
 @media (max-width: 720px) { .home-support { position: static; width: 100%; max-width: 300px; margin-top: 24px; } .dashboard-home { padding-bottom: 34px; } }
+
+
+/* Actual SL1, SL2 and SL3 seating layouts */
+.cinema-room {
+  overflow-x: auto;
+}
+
+.seat-banks {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 46px;
+  width: max-content;
+  min-width: 100%;
+}
+
+.seat-bank {
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.bank-heading {
+  display: none;
+}
+
+.pc-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), 48px);
+  gap: 7px;
+}
+
+.pc-seat {
+  width: 48px;
+  height: 48px;
+  min-height: 48px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.layout-lab-2 .seat-bank:first-child {
+  padding-top: 69px;
+}
+
+.special-seat {
+  grid-column: 1 / -1;
+  justify-self: start;
+  margin-bottom: 14px;
+}
