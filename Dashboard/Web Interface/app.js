@@ -44,7 +44,9 @@ function getMachineKey(host) {
   const labId = `lab-${match[1]}`;
   const pcNumber = Number(match[2]);
 
-  if (pcNumber < 1 || pcNumber > 140) return null;
+  if (pcNumber < 1 || !layouts[labId] || ![...layouts[labId].left, ...layouts[labId].right].includes(pcNumber)) {
+    return null;
+  }
 
   return `${labId}-${pcNumber}`;
 }
@@ -127,9 +129,7 @@ function openLab(labId) {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-
-function renderSeatMap(labId) {
-  const layouts = {
+const layouts = {
     "lab-1": {
       left: Array.from({ length: 20 }, (_, i) => i + 64),
       right: Array.from({ length: 63 }, (_, i) => i + 1),
@@ -160,6 +160,8 @@ function renderSeatMap(labId) {
     }
   };
 
+function renderSeatMap(labId) {
+  
   const layout = layouts[labId];
   if (!layout) return;
 
@@ -197,37 +199,67 @@ function renderSeatMap(labId) {
 
 
 
+
+
 function getMachinesForLab(labId) {
   if (machineDataByLab.has(labId)) {
     return machineDataByLab.get(labId);
   }
 
   const lab = labs[labId];
-  if (!lab) return [];
+  const layout = layouts[labId];
 
-  const machines = Array.from({ length: 140 }, (_, index) => {
-    const pcNumber = index + 1;
-    const id = String(pcNumber).padStart(3, "0");
+  if (!lab || !layout) return [];
 
+  // Static machine inventory from actual seat layout
+  const pcNumbers = [
+    ...new Set([...layout.left, ...layout.right])
+  ].sort((a, b) => a - b);
+
+  const machines = pcNumbers.map((pcNumber) => {
+    const hostName = `sl${Number(lab.number)}-${pcNumber}`;
     const report = liveMachines.get(`${labId}-${pcNumber}`);
+
     const age = report
-      ? Math.max(0, Math.floor(Date.now() / 1000 - Number(report.timestamp)))
+      ? Math.floor(Date.now() / 1000 - Number(report.timestamp))
       : null;
 
     const available = Boolean(
-      report && report.online && Number.isFinite(age) && age <= 90
+      report &&
+      report.online &&
+      Number.isFinite(age) &&
+      age >= -30 &&
+      age <= 90
     );
 
     return {
       pcNumber,
-      id: `PC-${id}`,
-      host: report?.host || `sl${lab.number}-${pcNumber}`,
+      id: hostName,
+      host: hostName,
       available,
-      coreCount: null,
-      cpuUsage: available ? Number(report.cpu) : null,
-      memoryTotalGb: available ? Number(report.ram_total_mb) / 1024 : null,
-      memoryAvailableGb: available ? Number(report.ram_available_mb) / 1024 : null,
-      sessions: available ? Number(report.ssh_sessions) : null,
+
+      cpuUsage: available ? Number(report.cpu ?? 0) : 0,
+
+      memoryTotalGb: available
+        ? Number(report.ram_total_mb ?? 0) / 1024
+        : 0,
+
+      memoryAvailableGb: available
+        ? Number(report.ram_available_mb ?? 0) / 1024
+        : 0,
+
+      diskUsage: available ? Number(report.disk ?? 0) : 0,
+
+      diskTotalGb: available
+        ? Number(report.disk_total_gb ?? 0)
+        : 0,
+
+      diskAvailableGb: available
+        ? Number(report.disk_available_gb ?? 0)
+        : 0,
+
+      sessions: available ? Number(report.ssh_sessions ?? 0) : 0,
+
       checkedSecondsAgo: age
     };
   });
@@ -235,6 +267,8 @@ function getMachinesForLab(labId) {
   machineDataByLab.set(labId, machines);
   return machines;
 }
+
+
 
 
 function createResourceCell(primaryText, secondaryText, percent, tone = "") {
@@ -261,85 +295,118 @@ function createResourceCell(primaryText, secondaryText, percent, tone = "") {
   return cell;
 }
 
+
 function createMachineRow(machine) {
   const row = document.createElement("tr");
   row.dataset.machineId = machine.id.toLowerCase();
   row.dataset.status = machine.available ? "available" : "unavailable";
 
+  
   const pcCell = document.createElement("td");
   const machineCell = document.createElement("div");
   machineCell.className = "machine-cell";
+
   const icon = document.createElement("span");
   icon.className = "machine-icon pc-machine-icon";
   icon.innerHTML = '<img src="images/PC.png" alt="" width="28" height="28">';
   icon.setAttribute("aria-hidden", "true");
+
   const labels = document.createElement("span");
   const name = document.createElement("span");
   name.className = "machine-name";
   name.textContent = machine.id;
-  const host = document.createElement("span");
-  host.className = "machine-host";
-  host.textContent = machine.host;
-  labels.append(name, host);
+
+  labels.append(name);
   machineCell.append(icon, labels);
   pcCell.append(machineCell);
   row.append(pcCell);
 
+  
   const statusCell = document.createElement("td");
   const status = document.createElement("span");
   status.className = `status ${machine.available ? "online" : "offline"}`;
+
   const dot = document.createElement("i");
   dot.className = "status-dot";
   dot.setAttribute("aria-hidden", "true");
-  status.append(dot, document.createTextNode(machine.available ? "Available" : "Unavailable"));
+
+  status.append(
+    dot,
+    document.createTextNode(machine.available ? "Available" : "Unavailable")
+  );
+
   statusCell.append(status);
   row.append(statusCell);
 
+  const cpuUsage = Number(machine.cpuUsage ?? 0);
+
+  row.append(
+    createResourceCell(
+      `${cpuUsage.toFixed(1)}%`,
+      "CPU usage",
+      cpuUsage,
+      cpuUsage >= 70 ? "warn" : ""
+    )
+  );
+
+  const memoryTotalGb = Number(machine.memoryTotalGb ?? 0);
+  const memoryAvailableGb = Number(machine.memoryAvailableGb ?? 0);
+
+  const memoryPercent = memoryTotalGb > 0
+    ? (memoryAvailableGb / memoryTotalGb) * 100
+    : 0;
+
+  row.append(
+    createResourceCell(
+      `${memoryAvailableGb.toFixed(1)} GB`,
+      `of ${memoryTotalGb.toFixed(1)} GB`,
+      memoryPercent,
+      machine.available && memoryPercent < 35 ? "warn" : ""
+    )
+  );
+
   
-  if (machine.available) {
-    row.append(
-      createResourceCell(
-        `${machine.cpuUsage.toFixed(1)}%`,
-        "CPU usage",
-        machine.cpuUsage,
-        machine.cpuUsage >= 70 ? "warn" : ""
-      )
-    );
+  const diskUsage = Number(machine.diskUsage ?? 0);
+  const diskAvailableGb = Number(machine.diskAvailableGb ?? 0);
 
-    const memoryPercent =
-      (machine.memoryAvailableGb / machine.memoryTotalGb) * 100;
-
-    row.append(
-      createResourceCell(
-        `${machine.memoryAvailableGb.toFixed(1)} GB`,
-        `of ${machine.memoryTotalGb.toFixed(1)} GB`,
-        memoryPercent,
-        memoryPercent < 35 ? "warn" : ""
-      )
-    );
-  } else {
-    row.append(createResourceCell("—", "No metrics", 0));
-    row.append(createResourceCell("—", "No metrics", 0));
-  }
-
+  row.append(
+    createResourceCell(
+      `${diskUsage.toFixed(1)}%`,
+      `${diskAvailableGb.toFixed(1)} GB free`,
+      diskUsage,
+      diskUsage >= 85 ? "warn" : ""
+    )
+  );
 
   const sessionCell = document.createElement("td");
   sessionCell.className = "sessions";
-  if (machine.available) {
-    const count = document.createElement("strong");
-    count.textContent = String(machine.sessions);
-    sessionCell.append(count, document.createTextNode(machine.sessions === 1 ? " session" : " sessions"));
-  } else {
-    sessionCell.textContent = "—";
-  }
+
+  const sessions = Number(machine.sessions ?? 0);
+  const count = document.createElement("strong");
+  count.textContent = String(sessions);
+
+  sessionCell.append(
+    count,
+    document.createTextNode(
+      sessions === 1 ? " session" : " sessions"
+    )
+  );
+
   row.append(sessionCell);
 
   const checked = document.createElement("td");
   checked.className = "last-check";
-  checked.textContent = machine.checkedSecondsAgo !== null ? `${machine.checkedSecondsAgo} sec ago` : "No report";
+
+  checked.textContent = machine.checkedSecondsAgo !== null &&
+                        machine.checkedSecondsAgo !== undefined
+    ? `${machine.checkedSecondsAgo} sec ago`
+    : "No report";
+
   row.append(checked);
+
   return row;
 }
+
 
 function renderMachineRows() {
   if (!activeLabId) return;
