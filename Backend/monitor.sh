@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SERVER_IP="0.0.0.0" # central server ip address
+SERVER_IP="10.130.154.1" # central server ip address
 SERVER_PORT=8000
 INTERVAL=30
 
