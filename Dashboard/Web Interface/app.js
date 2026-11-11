@@ -162,7 +162,7 @@ function createMachineRow(machine) {
   machineCell.className = "machine-cell";
   const icon = document.createElement("span");
   icon.className = "machine-icon pc-machine-icon";
-  icon.textContent = "PC";
+  icon.innerHTML = '<img src="images/PC.png" alt="" width="28" height="28">';
   icon.setAttribute("aria-hidden", "true");
   const labels = document.createElement("span");
   const name = document.createElement("span");
