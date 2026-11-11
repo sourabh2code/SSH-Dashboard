@@ -2,7 +2,7 @@
 
 SERVER_IP="0.0.0.0" # central server ip address
 SERVER_PORT=8000
-INTERVAL=10
+INTERVAL=30
 
 HOST=$(hostname)
 LOG_FILE="monitor_output.log"
@@ -48,8 +48,8 @@ do
     
     SSH_SESSIONS=$(ss -Htn state established '( sport = :22 )' 2>/dev/null | wc -l)
 
-
-    REPORT="host=$HOST cpu=$CPU mem=$MEM ram_total_mb=$RAM_TOTAL_MB ram_available_mb=$RAM_AVAILABLE_MB ssh_sessions=$SSH_SESSIONS"
+    TIMESTAMP=$(date +%s)
+    REPORT="host=$HOST cpu=$CPU mem=$MEM ram_total_mb=$RAM_TOTAL_MB ram_available_mb=$RAM_AVAILABLE_MB ssh_sessions=$SSH_SESSIONS timestamp=$TIMESTAMP"
 
     echo "$REPORT"
 
@@ -68,5 +68,5 @@ do
         mv "$LOG_FILE.tmp" "$LOG_FILE"
     fi
 
-    sleep "$INTERVAL"
+    sleep "$((INTERVAL - 1))"
 done
