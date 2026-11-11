@@ -8,9 +8,6 @@ const dashboardHome = document.getElementById("dashboard-home");
 const labWorkspace = document.getElementById("lab-workspace");
 const breadcrumb = document.getElementById("breadcrumb");
 const labTitle = document.getElementById("lab-title");
-const labEyebrow = document.getElementById("lab-eyebrow");
-const mapLabLabel = document.getElementById("map-lab-label");
-const machinesLabLabel = document.getElementById("machines-lab-label");
 const leftSeatBank = document.getElementById("seat-bank-left");
 const rightSeatBank = document.getElementById("seat-bank-right");
 const cinemaRoom = document.getElementById("cinema-room");
@@ -54,9 +51,6 @@ function openLab(labId) {
   dashboardHome.hidden = true;
   labWorkspace.hidden = false;
   labTitle.textContent = lab.name;
-  labEyebrow.textContent = `SOFTWARE LAB ${lab.number}`;
-  mapLabLabel.textContent = lab.name;
-  machinesLabLabel.textContent = lab.name;
   renderSeatMap(labId);
   renderMachineOverview(labId);
 
@@ -258,7 +252,7 @@ function renderMachineOverview(labId) {
   machineTotal.textContent = String(machines.length);
   machineAvailable.textContent = String(availableCount);
   machineUnavailable.textContent = String(unavailableCount);
-  machineSessions.textContent = String(activeSessionCount);
+  if (machineSessions) machineSessions.textContent = String(activeSessionCount);
   machineListCaption.textContent = `${lab.name} · 140 computers · preview data`;
   machineSearch.value = "";
   machineFilter.value = "all";
