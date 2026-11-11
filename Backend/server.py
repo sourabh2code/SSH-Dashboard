@@ -8,8 +8,10 @@ import time
 # Configuration
 PORT = 8000
 REPORT_DIR = Path(__file__).resolve().parent / "reports"
-RETENTION_HOURS = 24
-CLEANUP_INTERVAL = 3600  # 1 hour
+RETENTION_SECONDS = 300  # 5 minutes
+CLEANUP_INTERVAL = 30    # Check every 30 seconds
+MAX_REPORT_AGE = 60      # Reject reports older than 60 seconds
+FUTURE_TOLERANCE = 30    # Allow 30 seconds of clock difference
 
 REPORT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -23,35 +25,52 @@ def rebuild_latest():
             f.write(filepath.read_text())
 
 
+
 def save_report(data):
     fields = dict(field.split("=", 1) for field in data.split())
     host = fields["host"]
+    timestamp = int(fields["timestamp"])
+    now = time.time()
 
-    # Use safe hostnames as filenames
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,62}", host):
         raise ValueError("Invalid hostname")
+
+    if not (now - MAX_REPORT_AGE <= timestamp <= now + FUTURE_TOLERANCE):
+        raise ValueError("Stale or future timestamp")
 
     filepath = REPORT_DIR / f"machine_{host}.txt"
 
     with lock:
+        if filepath.exists():
+            old_data = filepath.read_text()
+            old_fields = dict(
+                field.split("=", 1) for field in old_data.split()
+            )
+            if timestamp <= int(old_fields.get("timestamp", 0)):
+                raise ValueError("Duplicate or older report")
+
         filepath.write_text(data + "\n")
         rebuild_latest()
 
 
-def cleanup_old_logs():
+
+def cleanup_stale_machines():
     while True:
-        cutoff = time.time() - RETENTION_HOURS * 3600
+        cutoff = time.time() - RETENTION_SECONDS
 
         with lock:
-            for filepath in REPORT_DIR.glob("report_*.log"):
+            for filepath in REPORT_DIR.glob("machine_*.txt"):
                 try:
                     if filepath.stat().st_mtime < cutoff:
                         filepath.unlink()
-                        print("Deleted:", filepath, flush=True)
+                        print("Removed offline machine:", filepath.name, flush=True)
                 except FileNotFoundError:
                     pass
 
+            rebuild_latest()
+
         time.sleep(CLEANUP_INTERVAL)
+
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -85,7 +104,7 @@ class Handler(BaseHTTPRequestHandler):
 def main():
     # Start background log cleanup
     cleanup_thread = threading.Thread(
-        target=cleanup_old_logs,
+        target=cleanup_stale_machines,
         daemon=True
     )
     cleanup_thread.start()
@@ -94,7 +113,7 @@ def main():
 
     print(f"Monitoring server running on port {PORT}")
     print(f"Reports directory: {REPORT_DIR}")
-    print(f"Log retention: {RETENTION_HOURS} hours")
+    print(f"Machine report retention: {RETENTION_SECONDS} seconds")
 
     try:
         server.serve_forever()
