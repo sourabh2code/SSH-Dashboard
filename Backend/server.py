@@ -1,4 +1,4 @@
-
+import json
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import re
 from pathlib import Path
@@ -99,6 +99,66 @@ class Handler(BaseHTTPRequestHandler):
 
         except (ValueError, UnicodeError):
             self.send_error(400)
+
+    
+    def do_GET(self):
+        if self.path != "/api/machines":
+            self.send_error(404)
+            return
+
+        machines = []
+        now = time.time()
+
+        with lock:
+            for filepath in sorted(REPORT_DIR.glob("machine_*.txt")):
+                try:
+                    age = now - filepath.stat().st_mtime
+
+                    # Ignore reports older than 5 minutes
+                    if age > 300:
+                        continue
+
+                    data = filepath.read_text().strip()
+                    fields = dict(
+                        item.split("=", 1) for item in data.split()
+                    )
+
+                    machines.append({
+                        "host": fields["host"],
+                        "cpu": float(fields["cpu"]),
+                        "mem": float(fields["mem"]),
+                        "ram_total_mb": int(fields["ram_total_mb"]),
+                        "ram_available_mb": int(fields["ram_available_mb"]),
+                        "ssh_sessions": int(fields["ssh_sessions"]),
+                        "timestamp": int(fields["timestamp"]),
+                        "last_seen_seconds": round(age),
+                        "online": age <= 90
+                    })
+
+                except (ValueError, KeyError, OSError):
+                    continue
+
+        response = json.dumps(machines).encode("utf-8")
+
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("Content-Length", str(len(response)))
+
+        # Allow the local frontend development server
+        allowed_origins = {
+            "http://localhost:5500",
+            "http://127.0.0.1:5500",
+            "http://localhost:5173",
+            "http://127.0.0.1:5173"
+        }
+        origin = self.headers.get("Origin")
+        if origin in allowed_origins:
+            self.send_header("Access-Control-Allow-Origin", origin)
+
+        self.end_headers()
+        self.wfile.write(response)
+
 
 
 def main():
