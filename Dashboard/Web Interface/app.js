@@ -30,6 +30,65 @@ let machinePage = 1;
 const machinePageSize = 10;
 const machineDataByLab = new Map();
 
+
+const API_URL = "http://127.0.0.1:8000/api/machines";
+const liveMachines = new Map();
+
+// Match actual lab hostnames, e.g. sl2-67 or sl2-pc-067
+function getMachineKey(host) {
+  const match = String(host).toLowerCase()
+    .match(/^sl([123])-(?:pc-)?0*(\d{1,3})(?:\..*)?$/);
+
+  if (!match) return null;
+
+  const labId = `lab-${match[1]}`;
+  const pcNumber = Number(match[2]);
+
+  if (pcNumber < 1 || pcNumber > 140) return null;
+
+  return `${labId}-${pcNumber}`;
+}
+
+async function fetchMachineData() {
+  try {
+    const response = await fetch(API_URL, { cache: "no-store" });
+
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+    const reports = await response.json();
+    if (!Array.isArray(reports)) throw new Error("Invalid API response");
+
+    liveMachines.clear();
+
+    for (const machine of reports) {
+      const key = getMachineKey(machine.host);
+      if (key) liveMachines.set(key, machine);
+    }
+
+    machineDataByLab.clear();
+
+    if (activeLabId) {
+      renderSeatMap(activeLabId);
+      renderMachineStats(activeLabId);
+      renderMachineRows();
+    }
+  } catch (error) {
+    console.error("Unable to fetch machine data:", error);
+    machineDataByLab.clear();
+
+    if (activeLabId) {
+      renderSeatMap(activeLabId);
+      renderMachineStats(activeLabId);
+      renderMachineRows();
+    }
+    // Keep previous reports; their timestamps still determine freshness.
+  }
+}
+
+fetchMachineData();
+setInterval(fetchMachineData, 30000);
+
+
 function setSection(section) {
   if (!activeLabId || !["map", "machines"].includes(section)) return;
   document.querySelectorAll("[data-lab-section]").forEach((panel) => {
@@ -81,7 +140,9 @@ function renderSeatMap(labId) {
       const pcNumber = firstPcNumber + index;
       const row = Math.floor(index / 7);
       const column = (index % 7) + 1;
-      const unavailable = ((pcNumber + lab.offset) % 9 === 0) || ((pcNumber + lab.offset) % 17 === 0);
+      const report = liveMachines.get(`${labId}-${pcNumber}`);
+      const age = report ? Date.now() / 1000 - Number(report.timestamp) : Infinity;
+      const unavailable = !report || !report.online || age > 90 || age < -30;
       const pc = document.createElement("span");
       const status = unavailable ? "Unavailable" : "Available";
 
@@ -95,38 +156,46 @@ function renderSeatMap(labId) {
   });
 }
 
+
 function getMachinesForLab(labId) {
-  if (machineDataByLab.has(labId)) return machineDataByLab.get(labId);
+  if (machineDataByLab.has(labId)) {
+    return machineDataByLab.get(labId);
+  }
+
   const lab = labs[labId];
   if (!lab) return [];
 
-  const coreCount = lab.offset === 3 ? 16 : 8;
-  const memoryTotalGb = lab.offset === 3 ? 32 : 16;
-  const labNumber = String(Number(lab.number));
   const machines = Array.from({ length: 140 }, (_, index) => {
     const pcNumber = index + 1;
-    const unavailable = ((pcNumber + lab.offset) % 9 === 0) || ((pcNumber + lab.offset) % 17 === 0);
     const id = String(pcNumber).padStart(3, "0");
-    const cpuUsage = unavailable ? null : ((pcNumber * 13 + lab.offset * 11) % 75) + 12;
-    const memoryUsedPercent = unavailable ? null : ((pcNumber * 11 + lab.offset * 5) % 70) + 15;
+
+    const report = liveMachines.get(`${labId}-${pcNumber}`);
+    const age = report
+      ? Math.max(0, Math.floor(Date.now() / 1000 - Number(report.timestamp)))
+      : null;
+
+    const available = Boolean(
+      report && report.online && Number.isFinite(age) && age <= 90
+    );
 
     return {
       pcNumber,
       id: `PC-${id}`,
-      host: `sl${labNumber}-pc-${id}.institute.edu`,
-      available: !unavailable,
-      coreCount,
-      cpuUsage,
-      memoryTotalGb,
-      memoryAvailableGb: unavailable ? null : memoryTotalGb * (100 - memoryUsedPercent) / 100,
-      sessions: unavailable ? null : (pcNumber + lab.offset) % 4,
-      checkedSecondsAgo: 10 + ((pcNumber * 5 + lab.offset) % 36),
+      host: report?.host || `sl${lab.number}-${pcNumber}`,
+      available,
+      coreCount: null,
+      cpuUsage: available ? Number(report.cpu) : null,
+      memoryTotalGb: available ? Number(report.ram_total_mb) / 1024 : null,
+      memoryAvailableGb: available ? Number(report.ram_available_mb) / 1024 : null,
+      sessions: available ? Number(report.ssh_sessions) : null,
+      checkedSecondsAgo: age
     };
   });
 
   machineDataByLab.set(labId, machines);
   return machines;
 }
+
 
 function createResourceCell(primaryText, secondaryText, percent, tone = "") {
   const cell = document.createElement("td");
@@ -186,14 +255,33 @@ function createMachineRow(machine) {
   statusCell.append(status);
   row.append(statusCell);
 
+  
   if (machine.available) {
-    row.append(createResourceCell(`${machine.cpuUsage}%`, `${machine.coreCount} cores`, machine.cpuUsage, machine.cpuUsage >= 70 ? "warn" : ""));
-    const memoryPercent = (machine.memoryAvailableGb / machine.memoryTotalGb) * 100;
-    row.append(createResourceCell(`${machine.memoryAvailableGb.toFixed(1)} GB`, `of ${machine.memoryTotalGb} GB`, memoryPercent, memoryPercent < 35 ? "warn" : ""));
+    row.append(
+      createResourceCell(
+        `${machine.cpuUsage.toFixed(1)}%`,
+        "CPU usage",
+        machine.cpuUsage,
+        machine.cpuUsage >= 70 ? "warn" : ""
+      )
+    );
+
+    const memoryPercent =
+      (machine.memoryAvailableGb / machine.memoryTotalGb) * 100;
+
+    row.append(
+      createResourceCell(
+        `${machine.memoryAvailableGb.toFixed(1)} GB`,
+        `of ${machine.memoryTotalGb.toFixed(1)} GB`,
+        memoryPercent,
+        memoryPercent < 35 ? "warn" : ""
+      )
+    );
   } else {
     row.append(createResourceCell("—", "No metrics", 0));
     row.append(createResourceCell("—", "No metrics", 0));
   }
+
 
   const sessionCell = document.createElement("td");
   sessionCell.className = "sessions";
@@ -208,7 +296,7 @@ function createMachineRow(machine) {
 
   const checked = document.createElement("td");
   checked.className = "last-check";
-  checked.textContent = machine.available ? `${machine.checkedSecondsAgo} sec ago` : "Check failed";
+  checked.textContent = machine.checkedSecondsAgo !== null ? `${machine.checkedSecondsAgo} sec ago` : "No report";
   row.append(checked);
   return row;
 }
@@ -241,24 +329,41 @@ function renderMachineRows() {
   machineNext.disabled = machinePage >= pageCount;
 }
 
-function renderMachineOverview(labId) {
+
+function renderMachineStats(labId) {
   const lab = labs[labId];
   if (!lab) return;
+
   const machines = getMachinesForLab(labId);
-  const availableCount = machines.filter((machine) => machine.available).length;
+
+  const availableCount = machines.filter(m => m.available).length;
   const unavailableCount = machines.length - availableCount;
-  const activeSessionCount = machines.reduce((total, machine) => total + (machine.sessions || 0), 0);
+
+  const activeSessionCount = machines.reduce(
+    (total, machine) => total + (machine.sessions || 0), 0
+  );
 
   machineTotal.textContent = String(machines.length);
   machineAvailable.textContent = String(availableCount);
   machineUnavailable.textContent = String(unavailableCount);
-  if (machineSessions) machineSessions.textContent = String(activeSessionCount);
-  machineListCaption.textContent = `${lab.name} · 140 computers · preview data`;
+
+  if (machineSessions) {
+    machineSessions.textContent = String(activeSessionCount);
+  }
+
+  machineListCaption.textContent =
+    `${lab.name} · ${machines.length} computers · live monitoring`;
+}
+
+function renderMachineOverview(labId) {
   machineSearch.value = "";
   machineFilter.value = "all";
   machinePage = 1;
+
+  renderMachineStats(labId);
   renderMachineRows();
 }
+
 
 function returnToDashboard() {
   activeLabId = null;
