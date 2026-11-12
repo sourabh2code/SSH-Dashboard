@@ -64,6 +64,21 @@ A student-facing dashboard for viewing the status and basic resource usage of Li
 
 ## Commands
 
-ssh -N -o ExitOnForwardFailure=yes \
-  -L 127.0.0.1:8000:127.0.0.1:8000 \
-  labuser@CENTRAL_IP
+Terminal 1:
+   scp server.py labuser@CENTRAL_IP:/home/labuser/
+EX:scp server.py labuser@sl2-1.cse.iitb.ac.in:/home/labuser/
+
+   ssh labuser@CENTRAL_IP
+EX:ssh labuser@sl2-1.cse.iitb.ac.in
+
+   python3 server.py
+
+Terminal 2:
+   ssh -N -o ExitOnForwardFailure=yes   -L 127.0.0.1:8000:127.0.0.1:8000    labuser@CENTRAL_IP
+EX:ssh -N -o ExitOnForwardFailure=yes   -L 127.0.0.1:8000:127.0.0.1:8000   labuser@10.130.154.1
+
+Terminal 3:
+./deploy-monitor.sh
+
+Terminal 4:
+python3 -m http.server 5500 --bind 127.0.0.1
