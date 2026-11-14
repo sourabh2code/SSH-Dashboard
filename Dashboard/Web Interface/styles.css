@@ -238,6 +238,61 @@
     .filter-label { color: #73808a; font-size: 10px; font-weight: 600; }
     .machine-filter { height: 34px; min-width: 105px; padding: 0 27px 0 9px; border: 1px solid #e5e9ed; border-radius: 7px; background: #fff; color: #52616b; font-size: 11px; }
     .machine-filter:focus, .search:focus { outline: none; border-color: #83bcb5; box-shadow: 0 0 0 3px #e9f5f3; }
+    
+        
+    .machine-sort-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .machine-sort {
+      min-width: 145px;
+      cursor: pointer;
+    }
+
+    .sort-direction {
+      width: 34px;
+      height: 34px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      border: 1px solid #e5e9ed;
+      border-radius: 7px;
+      background: #fff;
+
+      color: #52616b;
+      font-size: 17px;
+      cursor: pointer;
+    }
+
+    .sort-direction:hover:not(:disabled) {
+      background: #e9f5f3;
+      border-color: #83bcb5;
+      color: #087f78;
+    }
+
+    .sort-direction:disabled {
+      opacity: 0.45;
+      cursor: default;
+    }
+
+    /* Responsive sorting controls */
+
+    @media (max-width: 720px) {
+      .machine-list-tools {
+        width: 100%;
+      }
+
+      .machine-sort-group {
+        grid-column: 1 / -1;
+        justify-content: flex-end;
+      }
+    }
+
+    
     .pc-machine-icon { width: 35px; height: 35px; flex: 0 0 35px; border-radius: 9px; color: #54747b; font-size: 9px; font-weight: 750; letter-spacing: -.3px; }
     .machine-name, .machine-host { display: block; }
     .machine-list-panel table { min-width: 1100px; table-layout: fixed; }

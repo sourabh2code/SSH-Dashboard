@@ -18,6 +18,11 @@ const machineSessions = document.getElementById("machine-sessions");
 const machineRows = document.getElementById("machine-rows");
 const machineSearch = document.getElementById("machine-search");
 const machineFilter = document.getElementById("machine-filter");
+
+const machineSort = document.getElementById("machine-sort");
+const machineSortDirection = document.getElementById("machine-sort-direction");
+let sortAscending = true;
+
 const machineEmpty = document.getElementById("machine-empty");
 const machinePageSummary = document.getElementById("machine-page-summary");
 const machinePageCount = document.getElementById("machine-page-count");
@@ -455,6 +460,52 @@ function renderMachineRows() {
     return matchesSearch && matchesStatus;
   });
 
+
+  
+  const sortKey = machineSort.value;
+
+  function getSortValue(machine) {
+    switch (sortKey) {
+      case "cpu":
+        return machine.cpuUsage;
+
+      case "memory":
+        return machine.memoryTotalGb > 0
+          ? ((machine.memoryTotalGb -
+              machine.memoryAvailableGb) /
+              machine.memoryTotalGb) * 100
+          : 0;
+
+      case "disk":
+        return machine.diskUsage;
+
+      case "sessions":
+        return machine.sessions;
+
+      default:
+        return machine.pcNumber;
+    }
+  }
+
+  filtered.sort((a, b) => {
+
+    // Available machines first when sorting resources
+    if (sortKey !== "default" &&
+        a.available !== b.available) {
+      return Number(b.available) - Number(a.available);
+    }
+
+    const valueA = getSortValue(a);
+    const valueB = getSortValue(b);
+
+    // Apply ascending or descending to values and ties
+    const difference =
+      (valueA - valueB) || (a.pcNumber - b.pcNumber);
+
+    return sortAscending ? difference : -difference;
+  });
+
+
   const pageCount = Math.max(1, Math.ceil(filtered.length / machinePageSize));
   machinePage = Math.min(machinePage, pageCount);
   const startIndex = (machinePage - 1) * machinePageSize;
@@ -501,6 +552,19 @@ function renderMachineStats(labId) {
 function renderMachineOverview(labId) {
   machineSearch.value = "";
   machineFilter.value = "all";
+
+
+  machineSort.value = "default";
+  sortAscending = true;
+
+  machineSortDirection.textContent = "↑";
+  machineSortDirection.title = "Ascending";
+  machineSortDirection.setAttribute(
+    "aria-label",
+    "Change to descending order"
+  );
+  machineSortDirection.disabled = false;
+
   machinePage = 1;
 
   renderMachineStats(labId);
@@ -557,6 +621,36 @@ machineFilter.addEventListener("change", () => {
   machinePage = 1;
   renderMachineRows();
 });
+
+
+
+machineSort.addEventListener("change", () => {
+  machinePage = 1;
+  renderMachineRows();
+});
+
+
+machineSortDirection.addEventListener("click", () => {
+  sortAscending = !sortAscending;
+
+  machineSortDirection.textContent =
+    sortAscending ? "↑" : "↓";
+
+  machineSortDirection.title =
+    sortAscending ? "Ascending" : "Descending";
+
+  machineSortDirection.setAttribute(
+    "aria-label",
+    sortAscending
+      ? "Change to descending order"
+      : "Change to ascending order"
+  );
+
+  machinePage = 1;
+  renderMachineRows();
+});
+
+
 machinePrev.addEventListener("click", () => {
   if (machinePage > 1) {
     machinePage -= 1;

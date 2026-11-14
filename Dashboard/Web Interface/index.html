@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -7,10 +8,11 @@
   <title>Lab Machines | Student Dashboard</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
   <div class="app">
     <main>
-      
+
       <section class="content dashboard-home" id="dashboard-home" aria-labelledby="dashboard-title">
         <div class="page-heading">
           <div>
@@ -22,19 +24,22 @@
 
         <div class="lab-card-grid" aria-label="Available software labs">
           <button class="lab-card" type="button" data-open-lab="lab-1">
-            <span class="lab-card-top"><span class="lab-number">01</span><span class="lab-card-arrow" aria-hidden="true">↗</span></span>
+            <span class="lab-card-top"><span class="lab-number">01</span><span class="lab-card-arrow"
+                aria-hidden="true">↗</span></span>
             <span class="lab-card-title">Software Lab 1</span>
             <span class="lab-card-description">View the LAB layout and check machine availability.</span>
             <span class="lab-card-action">Open lab <span aria-hidden="true">→</span></span>
           </button>
           <button class="lab-card" type="button" data-open-lab="lab-2">
-            <span class="lab-card-top"><span class="lab-number">02</span><span class="lab-card-arrow" aria-hidden="true">↗</span></span>
+            <span class="lab-card-top"><span class="lab-number">02</span><span class="lab-card-arrow"
+                aria-hidden="true">↗</span></span>
             <span class="lab-card-title">Software Lab 2</span>
             <span class="lab-card-description">View the LAB layout and check machine availability.</span>
             <span class="lab-card-action">Open lab <span aria-hidden="true">→</span></span>
           </button>
           <button class="lab-card" type="button" data-open-lab="lab-3">
-            <span class="lab-card-top"><span class="lab-number">03</span><span class="lab-card-arrow" aria-hidden="true">↗</span></span>
+            <span class="lab-card-top"><span class="lab-number">03</span><span class="lab-card-arrow"
+                aria-hidden="true">↗</span></span>
             <span class="lab-card-title">Software Lab 3</span>
             <span class="lab-card-description">View the LAB layout and check machine availability.</span>
             <span class="lab-card-action">Open lab <span aria-hidden="true">→</span></span>
@@ -43,7 +48,8 @@
         <div class="help-card home-support">
           <div class="help-title">Need a hand?</div>
           <div class="help-copy">Having trouble accessing a lab machine?</div>
-          <a class="help-link" href="mailto:sysad.cc@iitb.ac.in">Contact lab support <span aria-hidden="true">→</span></a>
+          <a class="help-link" href="mailto:sysad.cc@iitb.ac.in">Contact lab support <span
+              aria-hidden="true">→</span></a>
         </div>
       </section>
 
@@ -53,28 +59,38 @@
             <h1 id="lab-title">Software Lab 1</h1>
             <p class="subtitle">LAB layout and machine information for this lab.</p>
           </div>
-          <button class="back-button" id="back-to-labs" type="button"><span aria-hidden="true">←</span> All labs</button>
+          <button class="back-button" id="back-to-labs" type="button"><span aria-hidden="true">←</span> All
+            labs</button>
         </div>
 
         <div class="lab-tabs" role="tablist" aria-label="Lab sections">
-          <button class="lab-tab active" type="button" role="tab" aria-selected="true" data-section="map">Seat map</button>
-          <button class="lab-tab" type="button" role="tab" aria-selected="false" data-section="machines">Machines</button>
+          <button class="lab-tab active" type="button" role="tab" aria-selected="true" data-section="map">Seat
+            map</button>
+          <button class="lab-tab" type="button" role="tab" aria-selected="false"
+            data-section="machines">Machines</button>
         </div>
 
         <section class="lab-section" data-lab-section="map" role="tabpanel" aria-labelledby="map-tab-title">
           <div class="section-heading">
-            <div><h2 id="map-tab-title">LAB layout</h2><p>Choose a computer by checking its availability.</p></div>
+            <div>
+              <h2 id="map-tab-title">LAB layout</h2>
+              <p>Choose a computer by checking its availability.</p>
+            </div>
           </div>
           <div class="room-card">
             <div class="room-card-head">
-              <div><p class="eyebrow">LAB PLAN</p><h3>Computer layout</h3><p>Each tile represents one computer in the LAB.</p></div>
+              <div>
+                <p class="eyebrow">LAB PLAN</p>
+                <h3>Computer layout</h3>
+                <p>Each tile represents one computer in the LAB.</p>
+              </div>
               <div class="seat-legend" aria-label="Computer availability legend">
                 <span><i class="legend-dot available" aria-hidden="true"></i>Available</span>
                 <span><i class="legend-dot unavailable" aria-hidden="true"></i>Unavailable</span>
               </div>
             </div>
             <div class="cinema-room" id="cinema-room">
-              
+
               <div class="seat-banks">
                 <section class="seat-bank" aria-labelledby="left-bank-title">
                   <div class="bank-heading"><span>70 PCs</span></div>
@@ -90,29 +106,78 @@
           </div>
         </section>
 
-        <section class="lab-section" data-lab-section="machines" role="tabpanel" aria-labelledby="machines-tab-title" hidden>
+        <section class="lab-section" data-lab-section="machines" role="tabpanel" aria-labelledby="machines-tab-title"
+          hidden>
           <div class="section-heading">
-            <div><h2 id="machines-tab-title">Machine overview</h2><p>Current availability and resource information for this lab.</p></div>
+            <div>
+              <h2 id="machines-tab-title">Machine overview</h2>
+              <p>Current availability and resource information for this lab.</p>
+            </div>
           </div>
           <div class="machine-summary-grid" aria-label="Machine summary for selected lab">
-            <article class="metric-card"><div class="metric-label">Total PCs</div><div class="metric-value" id="machine-total">—</div><div class="metric-foot">In this software lab</div></article>
-            <article class="metric-card"><div class="metric-label">Available</div><div class="metric-value good-value" id="machine-available">—</div><div class="metric-foot">Ready for connection</div></article>
-            <article class="metric-card"><div class="metric-label">Unavailable</div><div class="metric-value bad-value" id="machine-unavailable">—</div><div class="metric-foot">Not responding</div></article>
+            <article class="metric-card">
+              <div class="metric-label">Total PCs</div>
+              <div class="metric-value" id="machine-total">—</div>
+              <div class="metric-foot">In this software lab</div>
+            </article>
+            <article class="metric-card">
+              <div class="metric-label">Available</div>
+              <div class="metric-value good-value" id="machine-available">—</div>
+              <div class="metric-foot">Ready for connection</div>
+            </article>
+            <article class="metric-card">
+              <div class="metric-label">Unavailable</div>
+              <div class="metric-value bad-value" id="machine-unavailable">—</div>
+              <div class="metric-foot">Not responding</div>
+            </article>
             <!-- <article class="metric-card"><div class="metric-label">Active sessions</div><div class="metric-value" id="machine-sessions">—</div><div class="metric-foot">Session count only</div></article> -->
           </div>
 
           <section class="panel machine-list-panel" aria-labelledby="machine-list-title">
             <div class="panel-head machine-list-head">
-              <div><h3 class="panel-title" id="machine-list-title">Machine list</h3><div class="panel-caption" id="machine-list-caption">Resource snapshot for the selected lab</div></div>
+              <div>
+                <h3 class="panel-title" id="machine-list-title">Machine list</h3>
+                <div class="panel-caption" id="machine-list-caption">Resource snapshot for the selected lab</div>
+              </div>
               <div class="panel-tools machine-list-tools">
-                <label class="search-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4 4" stroke-linecap="round"/></svg><input class="search" id="machine-search" type="search" placeholder="Search PC number" aria-label="Search PCs in this lab" /></label>
+                <label class="search-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="1.8">
+                    <circle cx="10.8" cy="10.8" r="6.8" />
+                    <path d="m16 16 4 4" stroke-linecap="round" />
+                  </svg><input class="search" id="machine-search" type="search" placeholder="Search PC number"
+                    aria-label="Search PCs in this lab" /></label>
                 <label class="filter-label" for="machine-filter">Status</label>
-                <select class="machine-filter" id="machine-filter" aria-label="Filter machines by status"><option value="all">All</option><option value="available">Available</option><option value="unavailable">Unavailable</option></select>
+                <select class="machine-filter" id="machine-filter" aria-label="Filter machines by status">
+                  <option value="all">All</option>
+                  <option value="available">Available</option>
+                  <option value="unavailable">Unavailable</option>
+                </select>
+
+
+                <div class="machine-sort-group">
+                  <label class="filter-label" for="machine-sort">
+                    Sort by
+                  </label>
+
+                  <select class="machine-filter machine-sort" id="machine-sort">
+                    <option value="default">Default</option>
+                    <option value="cpu">CPU Usage</option>
+                    <option value="memory">Memory Usage</option>
+                    <option value="disk">Disk Usage</option>
+                    <option value="sessions">Active Sessions</option>
+                  </select>
+
+                  <button type="button" class="sort-direction" id="machine-sort-direction"
+                    aria-label="Change to descending order" title="Ascending" disabled>
+                    ↑
+                  </button>
+                </div>
+
               </div>
             </div>
             <div class="table-scroll">
               <table>
-                
+
                 <thead>
                   <tr>
                     <th>PC / host</th>
@@ -131,12 +196,15 @@
             </div>
             <div class="panel-foot machine-pagination">
               <span id="machine-page-summary">—</span>
-              <div class="pager"><button class="page-button" id="machine-prev" type="button" aria-label="Previous page">‹</button><span class="page-count" id="machine-page-count">—</span><button class="page-button" id="machine-next" type="button" aria-label="Next page">›</button></div>
-            
+              <div class="pager"><button class="page-button" id="machine-prev" type="button"
+                  aria-label="Previous page">‹</button><span class="page-count" id="machine-page-count">—</span><button
+                  class="page-button" id="machine-next" type="button" aria-label="Next page">›</button></div>
+
+          </section>
         </section>
-      </section>
     </main>
   </div>
   <script src="app.js" defer></script>
 </body>
+
 </html>
