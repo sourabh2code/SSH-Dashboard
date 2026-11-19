@@ -127,34 +127,74 @@ function openLab(labId) {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+
 function renderSeatMap(labId) {
-  const lab = labs[labId];
-  if (!lab) return;
+  const layouts = {
+    "lab-1": {
+      left: Array.from({ length: 20 }, (_, i) => i + 64),
+      right: Array.from({ length: 63 }, (_, i) => i + 1),
+      columns: [5, 7],
+      marked: []
+    },
+    "lab-2": {
+      left: [
+        ...Array.from({ length: 9 }, (_, r) =>
+          Array.from({ length: 7 }, (_, c) => r * 14 + c + 1)
+        ).flat(),
+        ...Array.from({ length: 6 }, (_, i) => i + 127)
+      ],
+      right: [
+        200,
+        ...Array.from({ length: 9 }, (_, r) =>
+          Array.from({ length: 7 }, (_, c) => r * 14 + c + 8)
+        ).flat()
+      ],
+      columns: [7, 7],
+      marked: [4, 9, 12, 16, 35, 53, 58, 63, 67, 72, 91, 94, 96, 97, 105, 112, 120, 132]
+    },
+    "lab-3": {
+      left: Array.from({ length: 36 }, (_, i) => i + 1),
+      right: Array.from({ length: 8 }, (_, i) => i + 37),
+      columns: [4, 2],
+      marked: [4, 9, 38, 41]
+    }
+  };
 
-  cinemaRoom.setAttribute("aria-label", `${lab.name} computer map, 140 PCs`);
-  [leftSeatBank, rightSeatBank].forEach((bank, bankIndex) => {
+  const layout = layouts[labId];
+  if (!layout) return;
+
+  const banks = [leftSeatBank, rightSeatBank];
+  cinemaRoom.setAttribute("aria-label", `${labs[labId].name} computer map`);
+  cinemaRoom.className = `cinema-room layout-${labId}`;
+
+  banks.forEach((bank, bankIndex) => {
     bank.replaceChildren();
-    const firstPcNumber = bankIndex * 70 + 1;
+    bank.style.setProperty("--cols", layout.columns[bankIndex]);
 
-    for (let index = 0; index < 70; index += 1) {
-      const pcNumber = firstPcNumber + index;
-      const row = Math.floor(index / 7);
-      const column = (index % 7) + 1;
+    const numbers = bankIndex === 0 ? layout.left : layout.right;
+
+    numbers.forEach((pcNumber, index) => {
       const report = liveMachines.get(`${labId}-${pcNumber}`);
       const age = report ? Date.now() / 1000 - Number(report.timestamp) : Infinity;
       const unavailable = !report || !report.online || age > 90 || age < -30;
+
       const pc = document.createElement("span");
       const status = unavailable ? "Unavailable" : "Available";
+      const marked = layout.marked.includes(pcNumber);
 
       pc.className = `pc-seat ${unavailable ? "is-unavailable" : "is-available"}`;
-      pc.textContent = String(pcNumber).padStart(3, "0");
-      pc.title = `PC-${String(pcNumber).padStart(3, "0")} · ${status}`;
+      if (pcNumber === 200) pc.classList.add("special-seat");
+
+      pc.textContent = String(pcNumber);
+      pc.title = `PC-${pcNumber} · ${status}`;
       pc.setAttribute("role", "img");
-      pc.setAttribute("aria-label", `Row ${String.fromCharCode(65 + row)}, column ${column}, PC-${String(pcNumber).padStart(3, "0")}, ${status.toLowerCase()}`);
+      pc.setAttribute("aria-label", `PC-${pcNumber}, ${status.toLowerCase()}`);
+
       bank.append(pc);
-    }
+    });
   });
 }
+
 
 
 function getMachinesForLab(labId) {
