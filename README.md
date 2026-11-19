@@ -59,3 +59,11 @@ A student-facing dashboard for viewing the status and basic resource usage of Li
 - Browser SSH and SFTP file transfer
 - Administrator-approved monitoring agents for more reliable metrics
 - PostgreSQL and service discovery as usage grows
+
+
+
+## Commands
+
+ssh -N -o ExitOnForwardFailure=yes \
+  -L 127.0.0.1:8000:127.0.0.1:8000 \
+  labuser@CENTRAL_IP
