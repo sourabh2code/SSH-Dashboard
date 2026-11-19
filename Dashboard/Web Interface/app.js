@@ -30,6 +30,34 @@ let machinePage = 1;
 const machinePageSize = 10;
 const machineDataByLab = new Map();
 
+function updateURL(labId = null, section = "map", replace = false) {
+  const url = new URL(window.location.href);
+
+  url.searchParams.delete("lab");
+  url.searchParams.delete("section");
+
+  if (labId) {
+    url.searchParams.set("lab", labId);
+    url.searchParams.set("section", section);
+  }
+
+  const method = replace ? "replaceState" : "pushState";
+  window.history[method]({}, "", url);
+}
+
+function restorePageFromURL() {
+  const params = new URLSearchParams(window.location.search);
+
+  const labId = params.get("lab");
+  const section = params.get("section") || "map";
+
+  if (labId && labs[labId]) {
+    openLab(labId, false);
+    setSection(["map", "machines"].includes(section) ? section : "map", false);
+  } else {
+    returnToDashboard(false);
+  }
+}
 
 const API_URL = "http://127.0.0.1:8000/api/machines";
 const liveMachines = new Map();
@@ -91,7 +119,7 @@ fetchMachineData();
 setInterval(fetchMachineData, 30000);
 
 
-function setSection(section) {
+function setSection(section, updateHistory = true) {
   if (!activeLabId || !["map", "machines"].includes(section)) return;
   document.querySelectorAll("[data-lab-section]").forEach((panel) => {
     panel.hidden = panel.dataset.labSection !== section;
@@ -102,9 +130,13 @@ function setSection(section) {
     button.classList.toggle("active", selected);
     if (button.hasAttribute("role")) button.setAttribute("aria-selected", String(selected));
   });
+
+  if (updateHistory) {
+  updateURL(activeLabId, section);
+}
 }
 
-function openLab(labId) {
+function openLab(labId, updateHistory = true) {
   const lab = labs[labId];
   if (!lab) return;
 
@@ -115,7 +147,7 @@ function openLab(labId) {
   renderSeatMap(labId);
   renderMachineOverview(labId);
 
-  breadcrumb.replaceChildren();
+  if (breadcrumb) breadcrumb.replaceChildren();
   const workspace = document.createElement("span");
   workspace.textContent = "Workspace";
   const separator = document.createElement("span");
@@ -123,9 +155,13 @@ function openLab(labId) {
   separator.textContent = "/";
   const current = document.createElement("b");
   current.textContent = lab.name;
-  breadcrumb.append(workspace, separator, current);
+  if (breadcrumb) breadcrumb.append(workspace, separator, current);
 
-  setSection("map");
+  setSection("map", false);
+
+  if (updateHistory) {
+    updateURL(labId, "map");
+  }
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
@@ -472,12 +508,12 @@ function renderMachineOverview(labId) {
 }
 
 
-function returnToDashboard() {
+function returnToDashboard(updateHistory = true) {
   activeLabId = null;
   dashboardHome.hidden = false;
   labWorkspace.hidden = true;
 
-  breadcrumb.replaceChildren();
+  if (breadcrumb) breadcrumb.replaceChildren();
   const workspace = document.createElement("span");
   workspace.textContent = "Workspace";
   const separator = document.createElement("span");
@@ -485,9 +521,19 @@ function returnToDashboard() {
   separator.textContent = "/";
   const current = document.createElement("b");
   current.textContent = "Dashboard";
-  breadcrumb.append(workspace, separator, current);
+  if (breadcrumb) breadcrumb.append(workspace, separator, current);
   window.scrollTo({ top: 0, behavior: "smooth" });
+
+  if (updateHistory) {
+  updateURL();
+  }
 }
+
+restorePageFromURL();
+
+window.addEventListener("popstate", () => {
+  restorePageFromURL();
+});
 
 document.querySelectorAll("[data-open-lab]").forEach((button) => {
   button.addEventListener("click", () => openLab(button.dataset.openLab));
