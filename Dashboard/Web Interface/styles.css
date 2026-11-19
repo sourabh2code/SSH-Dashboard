@@ -96,7 +96,7 @@
     .resource { min-width: 120px; }
     .resource-line { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 6px; color: #52606b; font-size: 10px; }
     .resource-line strong { color: #35434e; font-size: 10px; font-weight: 600; }
-    .bar { height: 5px; overflow: hidden; border-radius: 5px; background: #edf0f2; }
+    .bar { height: 6px; overflow: hidden; border-radius: 5px; background: #edf0f2; }
     .bar-fill { height: 100%; border-radius: inherit; background: #56a99b; }
     .bar-fill.warn { background: #d0a14d; }
     .sessions { color: #54616b; }
@@ -240,11 +240,17 @@
     .machine-filter:focus, .search:focus { outline: none; border-color: #83bcb5; box-shadow: 0 0 0 3px #e9f5f3; }
     .pc-machine-icon { width: 35px; height: 35px; flex: 0 0 35px; border-radius: 9px; color: #54747b; font-size: 9px; font-weight: 750; letter-spacing: -.3px; }
     .machine-name, .machine-host { display: block; }
-    .machine-list-panel table { min-width: 850px; }
-    .machine-list-panel th:first-child { min-width: 210px; }
-    .machine-list-panel td { height: 61px; }
-    .machine-resource { min-width: 102px; }
-    .machine-resource .resource-line { gap: 10px; }
+    .machine-list-panel table { min-width: 1100px; table-layout: fixed; }
+    .machine-list-panel th:first-child { width: 13%; }
+    .machine-list-panel th:nth-child(2) { width: 13%; }
+    .machine-list-panel th:nth-child(3) { width: 15%; }
+    .machine-list-panel th:nth-child(4) { width: 19%; }
+    .machine-list-panel th:nth-child(5) { width: 17%; }
+    .machine-list-panel th:nth-child(6) { width: 9%; }
+    .machine-list-panel th:nth-child(7) { width: 10%; }
+    .machine-list-panel td { height: 70px; padding: 12px 14px; }
+    .machine-resource { min-width: 0; width: 100%; }
+    .machine-resource .resource-line { gap: 8px; margin-bottom: 8px; }
     .machine-resource .resource-line span { color: #35434e; font-weight: 650; }
     .machine-resource .resource-line strong { color: #8a959d; font-size: 9px; font-weight: 500; }
     .machine-pagination { min-height: 52px; height: auto; gap: 12px; }

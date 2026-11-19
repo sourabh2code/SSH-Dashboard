@@ -45,11 +45,25 @@ do
     RAM_AVAILABLE_MB=$((AVAILABLE / 1024))
 
 
+    # Disk usage of root filesystem (/)
+    read -r DISK_TOTAL_KB DISK_USED_KB DISK_AVAILABLE_KB DISK_PERCENT < <(
+        df -P -k / | awk 'NR==2 {
+            gsub(/%/, "", $5)
+            print $2, $3, $4, $5
+        }'
+    )
+
+    DISK_TOTAL_GB=$(awk -v kb="$DISK_TOTAL_KB" 'BEGIN {printf "%.2f", kb/1048576}')
+    DISK_AVAILABLE_GB=$(awk -v kb="$DISK_AVAILABLE_KB" 'BEGIN {printf "%.2f", kb/1048576}')
+
+
+
     
     SSH_SESSIONS=$(ss -Htn state established '( sport = :22 )' 2>/dev/null | wc -l)
 
     TIMESTAMP=$(date +%s)
-    REPORT="host=$HOST cpu=$CPU mem=$MEM ram_total_mb=$RAM_TOTAL_MB ram_available_mb=$RAM_AVAILABLE_MB ssh_sessions=$SSH_SESSIONS timestamp=$TIMESTAMP"
+    REPORT="host=$HOST cpu=$CPU mem=$MEM ram_total_mb=$RAM_TOTAL_MB ram_available_mb=$RAM_AVAILABLE_MB disk=$DISK_PERCENT disk_total_gb=$DISK_TOTAL_GB disk_available_gb=$DISK_AVAILABLE_GB ssh_sessions=$SSH_SESSIONS timestamp=$TIMESTAMP"
+
 
     echo "$REPORT"
 
