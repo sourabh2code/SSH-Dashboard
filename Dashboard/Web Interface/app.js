@@ -390,19 +390,24 @@ function createMachineRow(machine) {
     )
   );
 
+  
   const memoryTotalGb = Number(machine.memoryTotalGb ?? 0);
   const memoryAvailableGb = Number(machine.memoryAvailableGb ?? 0);
 
+  // Calculate used memory
+  const memoryUsedGb = Math.max(0, memoryTotalGb - memoryAvailableGb);
+
+  // Calculate memory usage percentage
   const memoryPercent = memoryTotalGb > 0
-    ? (memoryAvailableGb / memoryTotalGb) * 100
+    ? (memoryUsedGb / memoryTotalGb) * 100
     : 0;
 
   row.append(
     createResourceCell(
-      `${memoryAvailableGb.toFixed(1)} GB`,
+      `${memoryUsedGb.toFixed(1)} GB`,
       `of ${memoryTotalGb.toFixed(1)} GB`,
       memoryPercent,
-      machine.available && memoryPercent < 35 ? "warn" : ""
+      machine.available && memoryPercent > 65 ? "warn" : ""
     )
   );
 
