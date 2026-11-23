@@ -1,84 +1,61 @@
-# Student Lab Machine Dashboard
-
-A student-facing dashboard for viewing the status and basic resource usage of Linux lab machines. The first version collects information over SSH without requiring sudo access on the lab machines. 
-
-## Features
-
-- Show whether each machine is reachable.
-- Display CPU load, core count, memory, and last check time.
-- Show logged-in session count if institute policy allows it.
-- Recommend a machine using transparent CPU and memory rules (planned).
-- Provide browser-based SSH and file transfer (planned).
-
-## Technology
-
-- Python and FastAPI for the backend
-- React for the frontend
-- SQLite for the prototype database
-- SSH for collecting machine information
-
-## Getting Started
-
-1. Select a few approved lab machines and record their hostnames/IP addresses and SSH ports.
-2. Confirm that the computer running the backend can reach them over SSH.
-3. Test these read-only commands on each machine:
-
-   ```sh
-   hostname
-   getconf _NPROCESSORS_ONLN
-   cat /proc/loadavg
-   awk '/MemTotal|MemAvailable/ {print}' /proc/meminfo
-   who
-   ```
-
-4. Implement an SSH collector that runs the commands, verifies host keys, and saves timestamped results.
-5. Schedule collection every 30–60 seconds with connection timeouts and limited concurrency.
-6. Display machine status, metrics, and the last check time in the dashboard.
-7. Compare dashboard values with manual SSH checks and handle unreachable machines and stale data.
-
-## Data Collected
-
-- Machine reachability and check time
-- Hostname and CPU core count
-- CPU load average
-- Total and available memory
-- Logged-in user count, if permitted
-
-## Security and Privacy
-
-- Use read-only SSH checks; do not use sudo.
-- Verify SSH host keys.
-- Do not store student passwords in the application database.
-- Confirm institute policy before collecting or displaying logged-in usernames.
-- Run the backend on an institute-approved host that can access the lab network.
-
-## Future Work
-
-- Institute authentication and student identity mapping
-- Rule-based machine recommendations based on CPU and memory requirements
-- Browser SSH and SFTP file transfer
-- Administrator-approved monitoring agents for more reliable metrics
-- PostgreSQL and service discovery as usage grows
-
+# SSH Dashboard
+ 
+Live status dashboard for lab machines (CPU, RAM, disk, SSH sessions). Each machine pushes its own metrics to a central collector; the web page polls the collector.
+ 
+```
+lab PCs (monitor.sh) --POST /report--> server.py --GET /api/machines--> Web Interface
+        ^
+        |  deployed over SSH by deploy-monitors.sh (host1/2/3)
+```
+ 
+## Code organization
+ 
+```
+SSH-Dashboard/
+├── Backend/
+│   ├── server.py            # Central collector (stdlib HTTP server, port 8000)
+│   ├── monitor.sh           # Agent running on each lab PC
+│   ├── deploy-monitors.sh   # Launcher: pushes and starts monitor.sh on a lab's PCs
+│   └── host1, host2, host3  # Host lists (user@hostname), one per lab
+└── Dashboard/Web Interface/
+    ├── index.html           # Page structure (home, lab view, machine list)
+    ├── app.js               # Fetches /api/machines every 30s, renders seat map and table
+    ├── styles.css           # Styling
+    └── images/PC.png        # Machine icon
+```
+ 
+## Role of each file
+ 
+| File | Role |
+|---|---|
+| `server.py` | `POST /report` validates and stores one report per machine in `reports/`; `GET /api/machines` returns all current machines. Rejects stale or duplicate reports and deletes machines silent for 5 min. |
+| `monitor.sh` | Every 30s, measures CPU %, memory, disk and SSH sessions, then POSTs one `key=value` line to the server. Set `SERVER_IP` before deploying. |
+| `deploy-monitors.sh` | Asks for a lab (1/2/3) and the SSH password, copies `monitor.sh` to each host and runs it. Keep the terminal open; Ctrl+C stops all monitors. |
+| `host1/2/3` | Machine lists for Software Labs 1, 2 and 3. |
+| `index.html` / `app.js` / `styles.css` | Dashboard UI: per-lab seat map, plus a searchable, sortable, paginated machine table. |
 
 
 ## Commands
 
-Terminal 1:
+Terminal 1: copies the server.py to the central machine and starts the script
+
    scp server.py labuser@CENTRAL_IP:/home/labuser/
-EX:scp server.py labuser@sl2-1.cse.iitb.ac.in:/home/labuser/
+   EX : scp server.py labuser@sl2-1.cse.iitb.ac.in:/home/labuser/
 
    ssh labuser@CENTRAL_IP
-EX:ssh labuser@sl2-1.cse.iitb.ac.in
+   EX : ssh labuser@sl2-1.cse.iitb.ac.in
 
    python3 server.py
 
-Terminal 2:
+Terminal 2: enables the ssh tunnel for transferring the report from server to local machine 
+
    ssh -N -o ExitOnForwardFailure=yes   -L 127.0.0.1:8000:127.0.0.1:8000    labuser@CENTRAL_IP
-EX:ssh -N -o ExitOnForwardFailure=yes   -L 127.0.0.1:8000:127.0.0.1:8000   labuser@10.130.154.1
+   EX : ssh -N -o ExitOnForwardFailure=yes   -L 127.0.0.1:8000:127.0.0.1:8000   labuser@10.130.154.1
 
-Terminal 3:
-./deploy-monitor.sh
+Terminal 3: copies monitor.sh to all the machines and starts the script
 
-Terminal 4:
-python3 -m http.server 5500 --bind 127.0.0.1
+   ./deploy-monitor.sh
+
+Terminal 4: bind the port to render the frontend data
+
+   python3 -m http.server 5500 --bind 127.0.0.1
